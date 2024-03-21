@@ -1,0 +1,2 @@
+class PresentationModuleGradlePlugin : LibraryGradlePlugin() {
+}

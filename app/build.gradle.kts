@@ -1,7 +1,9 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
+
+apply<AppModuleGradlePlugin>()
 
 android {
     namespace = "com.zagart.museum"
@@ -30,11 +32,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -47,16 +46,4 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}
-
-dependencies {
-
-    implementation(project(":shared:strings"))
-
-    implementation(libs.activity.compose)
-    implementation(libs.core.ktx)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling)
-    implementation(platform(libs.compose.bom))
 }

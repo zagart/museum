@@ -1,0 +1,2 @@
+class DomainModuleGradlePlugin : LibraryGradlePlugin() {
+}
