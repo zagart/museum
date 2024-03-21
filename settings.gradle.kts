@@ -20,5 +20,19 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Museum"
+
 include(":app")
- 
+
+include(":features:details:data")
+include(":features:details:presentation")
+include(":features:details:domain")
+
+include(":features:home:data")
+include(":features:home:domain")
+include(":features:home:presentation")
+
+include(":features:settings:data")
+include(":features:settings:presentation")
+
+include(":shared:strings")
+include(":shared:ui")

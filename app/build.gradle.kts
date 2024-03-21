@@ -51,6 +51,8 @@ android {
 
 dependencies {
 
+    implementation(project(":shared:strings"))
+
     implementation(libs.activity.compose)
     implementation(libs.core.ktx)
     implementation(libs.compose.material3)
