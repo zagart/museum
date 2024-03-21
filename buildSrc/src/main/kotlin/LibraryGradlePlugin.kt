@@ -2,19 +2,20 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 open class LibraryGradlePlugin : Plugin<Project> {
+
     override fun apply(project: Project) {
         with(project) {
             pluginManager.apply("android-library")
             pluginManager.apply("kotlin-android")
 
             with(android()) {
-                compileSdk = 34
+                compileSdk = ProjectConfig.compileSdkVersion
 
                 defaultConfig.apply {
-                    minSdk = 21
-                    targetSdk = 34
-                    versionCode = 1
-                    versionName = "1.0"
+                    minSdk = ProjectConfig.minSdkVersion
+                    targetSdk = ProjectConfig.targetSdkVersion
+                    versionCode = ProjectConfig.versionCode
+                    versionName = ProjectConfig.versionName
 
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     vectorDrawables {
@@ -34,7 +35,7 @@ open class LibraryGradlePlugin : Plugin<Project> {
                     compose = true
                 }
                 composeOptions {
-                    kotlinCompilerExtensionVersion = "1.5.8"
+                    kotlinCompilerExtensionVersion = ProjectConfig.kotlinCompilerExtensionVersion
                 }
                 packaging {
                     resources {
