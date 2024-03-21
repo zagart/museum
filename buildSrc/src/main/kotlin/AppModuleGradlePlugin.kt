@@ -7,6 +7,9 @@ class AppModuleGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {
+            pluginManager.apply("com.google.devtools.ksp")
+
+            setupHilt()
             dependencies {
                 //Main dependencies
                 implementation(library("activity.compose"))

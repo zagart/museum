@@ -7,6 +7,9 @@ open class LibraryGradlePlugin : Plugin<Project> {
         with(project) {
             pluginManager.apply("android-library")
             pluginManager.apply("kotlin-android")
+            pluginManager.apply("com.google.devtools.ksp")
+
+            setupHilt()
 
             with(android()) {
                 compileSdk = ProjectConfig.compileSdkVersion
