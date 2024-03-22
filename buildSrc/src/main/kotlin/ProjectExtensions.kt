@@ -35,6 +35,14 @@ fun Project.setupHilt() {
     }
 }
 
+fun Project.setupRoom() {
+    dependencies {
+        ksp(library("room-compiler"))
+        implementation(library("room"))
+        implementation(library("room-ktx"))
+    }
+}
+
 fun Project.setupCompose() {
     dependencies {
         implementation(platform(library("compose-bom")))

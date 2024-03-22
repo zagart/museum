@@ -18,6 +18,7 @@ rootProject.name = "Museum"
 include(":api")
 include(":app")
 
+include(":core:data")
 include(":core:di")
 
 include(":features:details:data")

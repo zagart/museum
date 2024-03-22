@@ -11,3 +11,7 @@ fun List<ArtObjectDto>.dtosAsDomainList(): List<ArtObject> {
 fun List<ArtObjectEntity>.entitiesAsDomainList(): List<ArtObject> {
     return map { ArtObject(it.id, it.title) }
 }
+
+fun List<ArtObjectDto>.dtosAtEntityList(): List<ArtObjectEntity> {
+    return map { ArtObjectEntity(it.id, it.title) }
+}

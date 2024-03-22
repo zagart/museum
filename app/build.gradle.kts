@@ -53,6 +53,7 @@ android {
     dependencies {
         addHomeFeature()
         implementation(project(":core:di"))
+        implementation(project(":core:data"))
         implementation(project(":shared:strings"))
     }
 }
