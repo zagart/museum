@@ -27,6 +27,7 @@ fun BottomBar(
     NavigationBar {
         items.forEachIndexed { index, item ->
             val isSelected = index == selectedItemIndex
+
             NavigationBarItem(
                 selected = isSelected,
                 label = {
@@ -44,7 +45,8 @@ fun BottomBar(
                         painter = rememberVectorPainter(image = if (isSelected) item.activeIcon else item.passiveIcon),
                         contentDescription = item.name
                     )
-                }, onClick = {
+                },
+                onClick = {
                     selectedItemIndex = index
                     item.onItemPressed()
                 })

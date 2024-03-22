@@ -15,7 +15,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "Museum"
 
+include(":api")
 include(":app")
+
+include(":core:di")
 
 include(":features:details:data")
 include(":features:details:presentation")

@@ -4,6 +4,7 @@ import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.project
 
 fun Project.android(): LibraryExtension {
     return extensions.getByType<LibraryExtension>()
@@ -45,5 +46,14 @@ fun Project.setupCompose() {
         implementation(library("compose-ui-tooling-preview"))
         implementation(library("lifecycle-runtime-compose"))
         implementation(library("lifecycle-viewmodel-compose"))
+    }
+}
+
+fun Project.addHomeFeature() {
+    dependencies {
+        implementation(project(":api"))
+        implementation(project(":features:home:data"))
+        implementation(project(":features:home:domain"))
+        implementation(project(":features:home:presentation"))
     }
 }

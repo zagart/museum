@@ -1,21 +1,29 @@
 package com.zagart.museum.ui
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.zagart.museum.home.presentation.HomeScreen
+import com.zagart.museum.home.presentation.HomeViewModel
 import com.zagart.museum.ui.components.BottomBar
 import com.zagart.museum.ui.icons.IconsProvider
 import com.zagart.museum.ui.models.IconModel
 import com.zagart.museum.ui.theme.MuseumTheme
 
 @Composable
-fun MuseumApp() {
+fun MuseumApp(
+    homeViewModel: HomeViewModel
+) {
+    val context = LocalContext.current
     val navController = rememberNavController()
 
     MuseumTheme {
@@ -50,14 +58,25 @@ fun MuseumApp() {
             ) {
                 navigation(startDestination = "items", route = "home") {
                     composable("items") {
-
+                        HomeScreen(
+                            viewModel = homeViewModel,
+                            onBackPressed = {
+                                if (context is Activity) {
+                                    context.finish()
+                                }
+                            }
+                        )
                     }
                     composable("details") {
 
                     }
                 }
                 composable("settings") {
-
+                    BackHandler {
+                        if (context is Activity) {
+                            context.finish()
+                        }
+                    }
                 }
             }
         }

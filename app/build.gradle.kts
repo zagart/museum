@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.hilt)
 }
 
 apply<AppModuleGradlePlugin>()
@@ -45,9 +46,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    hilt {
+        enableAggregatingTask = false
+    }
 
     dependencies {
-
+        addHomeFeature()
+        implementation(project(":core:di"))
         implementation(project(":shared:strings"))
     }
 }

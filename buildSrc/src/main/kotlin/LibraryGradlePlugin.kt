@@ -1,3 +1,4 @@
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -36,6 +37,10 @@ open class LibraryGradlePlugin : Plugin<Project> {
                 }
                 buildFeatures {
                     compose = true
+                }
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
                 }
                 composeOptions {
                     kotlinCompilerExtensionVersion = ProjectConfig.kotlinCompilerExtensionVersion
