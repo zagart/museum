@@ -15,9 +15,9 @@ class ArtObjectRemoteSource @Inject constructor(
     private val api: MuseumApi
 ) {
 
-    fun getArtObjects(): Flow<Result<List<ArtObjectDto>>> {
+    internal fun getByPage(page: Int): Flow<Result<List<ArtObjectDto>>> {
         return flow {
-            emit(runCatching { api.requestArtObjects().artObjects })
+            emit(runCatching { api.requestArtObjects(page = page).artObjects })
         }.flowOn(ioDispatcher)
     }
 }

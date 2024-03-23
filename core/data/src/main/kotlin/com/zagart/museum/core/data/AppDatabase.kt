@@ -3,11 +3,14 @@ package com.zagart.museum.core.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.zagart.museum.home.data.daos.ArtObjectDao
+import com.zagart.museum.home.data.daos.RemoteKeyDao
 import com.zagart.museum.home.data.models.ArtObjectEntity
+import com.zagart.museum.home.data.models.RemoteKeyEntity
 
 @Database(
-    entities = [ArtObjectEntity::class],
-    version = 1
+    entities = [ArtObjectEntity::class, RemoteKeyEntity::class],
+    version = 1,
+    exportSchema = false
 )
 /**
  * General rule for DAO implementations: in case you need updates, use Flow<*> return type.
@@ -15,5 +18,7 @@ import com.zagart.museum.home.data.models.ArtObjectEntity
  */
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun artObjectDao() : ArtObjectDao
+    abstract fun artObjectDao(): ArtObjectDao
+
+    abstract fun remoteKeyDao(): RemoteKeyDao
 }

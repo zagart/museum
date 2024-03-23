@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.zagart.museum.core.data.AppDatabase
 import com.zagart.museum.home.data.daos.ArtObjectDao
+import com.zagart.museum.home.data.daos.RemoteKeyDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,5 +25,10 @@ object CoreDataModule {
     @Provides
     fun provideArtObjectsDao(database: AppDatabase): ArtObjectDao {
         return database.artObjectDao()
+    }
+
+    @Provides
+    fun provideRemoteKeyDao(database: AppDatabase): RemoteKeyDao {
+        return database.remoteKeyDao()
     }
 }

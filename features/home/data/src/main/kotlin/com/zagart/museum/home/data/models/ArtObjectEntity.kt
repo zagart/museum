@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ArtObjectEntity(
     @PrimaryKey
     val id: String,
-    val title: String
+    val title: String,
+    val page: Int
 )

@@ -1,8 +1,8 @@
 package com.zagart.museum.home.presentation.extensions
 
 import com.zagart.museum.home.domain.models.ArtObject
-import com.zagart.museum.home.presentation.HomeScreenItem
+import com.zagart.museum.home.presentation.HomeScreenItemModel
 
-fun List<ArtObject>.toUiModel(): List<HomeScreenItem> {
-    return mapNotNull { HomeScreenItem(it.id, it.title) }
+fun ArtObject.toUiModel(): HomeScreenItemModel {
+    return HomeScreenItemModel(id, title)
 }
