@@ -10,8 +10,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":api"))
-    implementation(project(":core:di"))
     implementation(project(":features:home:domain"))
 
     implementation(libs.paging.compose)

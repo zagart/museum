@@ -2,13 +2,19 @@ package com.zagart.museum.core.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.zagart.museum.home.data.daos.ArtObjectDao
+import com.zagart.museum.details.data.daos.ArtObjectDetailsDao
+import com.zagart.museum.details.data.models.ArtObjectDetailsEntity
+import com.zagart.museum.home.data.daos.ArtObjectShortDao
 import com.zagart.museum.home.data.daos.RemoteKeyDao
-import com.zagart.museum.home.data.models.ArtObjectEntity
+import com.zagart.museum.home.data.models.ArtObjectShortEntity
 import com.zagart.museum.home.data.models.RemoteKeyEntity
 
 @Database(
-    entities = [ArtObjectEntity::class, RemoteKeyEntity::class],
+    entities = [
+        ArtObjectShortEntity::class,
+        ArtObjectDetailsEntity::class,
+        RemoteKeyEntity::class
+    ],
     version = 1,
     exportSchema = false
 )
@@ -18,7 +24,9 @@ import com.zagart.museum.home.data.models.RemoteKeyEntity
  */
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun artObjectDao(): ArtObjectDao
+    abstract fun artObjectShortDao(): ArtObjectShortDao
+
+    abstract fun artObjectDetailsDao(): ArtObjectDetailsDao
 
     abstract fun remoteKeyDao(): RemoteKeyDao
 }

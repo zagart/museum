@@ -3,8 +3,13 @@ plugins {
     `kotlin-android`
 }
 
-apply<DomainModuleGradlePlugin>()
+apply<PresentationModuleGradlePlugin>()
 
 android {
     namespace = "com.zagart.museum.details.presentation"
+}
+
+dependencies {
+    implementation(project(":features:home:domain"))
+    implementation(project(":features:details:domain"))
 }

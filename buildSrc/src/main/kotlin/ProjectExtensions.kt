@@ -68,3 +68,12 @@ fun Project.addHomeFeature() {
         implementation(library("paging-compose"))
     }
 }
+
+fun Project.addDetailsFeature() {
+    dependencies {
+        implementation(project(":api"))
+        implementation(project(":features:details:data"))
+        implementation(project(":features:details:domain"))
+        implementation(project(":features:details:presentation"))
+    }
+}

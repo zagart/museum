@@ -11,4 +11,5 @@ android {
 
 dependencies {
     implementation(project(":features:home:data"))
+    implementation(project(":features:details:data"))
 }

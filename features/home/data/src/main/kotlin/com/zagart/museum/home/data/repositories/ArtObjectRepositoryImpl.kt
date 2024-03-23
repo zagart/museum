@@ -12,7 +12,7 @@ import com.zagart.museum.api.MuseumApi
 import com.zagart.museum.api.PAGE_SIZE
 import com.zagart.museum.home.data.extensions.asRemoteKeyEntity
 import com.zagart.museum.home.data.extensions.toDomainModel
-import com.zagart.museum.home.data.models.ArtObjectEntity
+import com.zagart.museum.home.data.models.ArtObjectShortEntity
 import com.zagart.museum.home.data.models.RemoteKeyEntity
 import com.zagart.museum.home.data.sources.ArtObjectLocalSource
 import com.zagart.museum.home.data.sources.ArtObjectRemoteSource
@@ -45,7 +45,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
     private class ArtObjectsMediator(
         private val localSource: ArtObjectLocalSource,
         private val remoteSource: ArtObjectRemoteSource
-    ) : RemoteMediator<Int, ArtObjectEntity>() {
+    ) : RemoteMediator<Int, ArtObjectShortEntity>() {
 
         private val defaultMediatorException = Throwable("Failure in ArtObjectsMediator#load")
 
@@ -60,7 +60,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
         }
 
         override suspend fun load(
-            loadType: LoadType, state: PagingState<Int, ArtObjectEntity>
+            loadType: LoadType, state: PagingState<Int, ArtObjectShortEntity>
         ): MediatorResult {
             val page: Int = when (loadType) {
                 LoadType.REFRESH -> {
@@ -103,9 +103,11 @@ class ArtObjectRepositoryImpl @Inject constructor(
                     }
 
                     return@runCatching stopPagination
+                } else {
+                    return MediatorResult.Error(
+                        pageItemsResult.exceptionOrNull() ?: defaultMediatorException
+                    )
                 }
-
-                false
             }
 
             return if (loadingResult.isSuccess) {
@@ -115,7 +117,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
             }
         }
 
-        private suspend fun getClosestKey(state: PagingState<Int, ArtObjectEntity>): RemoteKeyEntity? {
+        private suspend fun getClosestKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
             return state.anchorPosition?.let { position ->
                 state.closestItemToPosition(position)?.id?.let { id ->
                     localSource.getKeyByArtObjectId(id).single().getOrNull()
@@ -123,7 +125,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
             }
         }
 
-        private suspend fun getFirstKey(state: PagingState<Int, ArtObjectEntity>): RemoteKeyEntity? {
+        private suspend fun getFirstKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
             return state.pages.firstOrNull {
                 it.data.isNotEmpty()
             }?.data?.firstOrNull()?.let { artObject ->
@@ -131,7 +133,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
             }
         }
 
-        private suspend fun getLastKey(state: PagingState<Int, ArtObjectEntity>): RemoteKeyEntity? {
+        private suspend fun getLastKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
             return state.pages.lastOrNull {
                 it.data.isNotEmpty()
             }?.data?.lastOrNull()?.let { artObject ->

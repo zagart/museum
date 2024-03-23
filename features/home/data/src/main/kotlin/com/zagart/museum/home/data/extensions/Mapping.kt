@@ -1,30 +1,25 @@
 package com.zagart.museum.home.data.extensions
 
 import com.zagart.museum.api.model.ArtObjectDto
-import com.zagart.museum.home.data.models.ArtObjectEntity
+import com.zagart.museum.home.data.models.ArtObjectShortEntity
 import com.zagart.museum.home.data.models.RemoteKeyEntity
 import com.zagart.museum.home.domain.models.ArtObject
 
-fun List<ArtObjectDto>.dtosAsDomainList(): List<ArtObject> {
-    return map { ArtObject(it.id, it.title) }
-}
-
-fun List<ArtObjectEntity>.entitiesAsDomainList(): List<ArtObject> {
-    return map { it.toDomainModel() }
-}
-
-fun List<ArtObjectDto>.dtosAtEntityList(page: Int): List<ArtObjectEntity> {
+fun List<ArtObjectDto>.dtosAtEntityList(page: Int): List<ArtObjectShortEntity> {
     return map {
-        ArtObjectEntity(
-            id = it.id,
-            title = it.title,
-            page = page
+        ArtObjectShortEntity(
+            id = it.id, title = it.title, objectNumber = it.objectNumber, page = page
         )
     }
 }
 
-fun ArtObjectEntity.toDomainModel(): ArtObject {
-    return ArtObject(id, title)
+fun ArtObjectShortEntity.toDomainModel(): ArtObject {
+    return ArtObject(
+        id = id,
+        title = title,
+        objectNumber = objectNumber,
+        description = null
+    )
 }
 
 fun ArtObjectDto.asRemoteKeyEntity(page: Int, endOfPaginationReached: Boolean): RemoteKeyEntity {

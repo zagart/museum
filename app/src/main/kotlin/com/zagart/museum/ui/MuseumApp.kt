@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.zagart.museum.details.presentation.DetailsScreen
+import com.zagart.museum.details.presentation.DetailsViewModel
 import com.zagart.museum.home.presentation.HomeScreen
 import com.zagart.museum.home.presentation.HomeViewModel
 import com.zagart.museum.ui.components.BottomBar
@@ -21,7 +23,8 @@ import com.zagart.museum.ui.theme.MuseumTheme
 
 @Composable
 fun MuseumApp(
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    detailsViewModel: DetailsViewModel,
 ) {
     val context = LocalContext.current
     val navController = rememberNavController()
@@ -60,6 +63,10 @@ fun MuseumApp(
                     composable("items") {
                         HomeScreen(
                             viewModel = homeViewModel,
+                            onItemPressed = { objectNumber ->
+                                detailsViewModel.prepare(objectNumber)
+                                navController.navigate("details")
+                            },
                             onBackPressed = {
                                 if (context is Activity) {
                                     context.finish()
@@ -68,7 +75,12 @@ fun MuseumApp(
                         )
                     }
                     composable("details") {
-
+                        DetailsScreen(
+                            viewModel = detailsViewModel,
+                            onBackPressed = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
                 }
                 composable("settings") {

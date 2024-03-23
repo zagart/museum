@@ -2,6 +2,7 @@ package com.zagart.museum.home.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,18 +34,26 @@ import androidx.paging.compose.collectAsLazyPagingItems
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel, onBackPressed: () -> Unit
+    viewModel: HomeViewModel,
+    onItemPressed: (String) -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     BackHandler {
         onBackPressed()
     }
-    HomeScreen(state = state)
+    HomeScreen(
+        state = state,
+        onItemPressed = onItemPressed
+    )
 }
 
 @Composable
-private fun HomeScreen(state: HomeScreenState) {
+private fun HomeScreen(
+    state: HomeScreenState,
+    onItemPressed: (String) -> Unit
+) {
     when (state) {
         is HomeScreenState.Failure -> {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -72,7 +81,10 @@ private fun HomeScreen(state: HomeScreenState) {
                     count = pagingItems.itemCount,
                     key = { index -> pagingItems[index]?.id ?: index },
                     itemContent = { index ->
-                        HomeScreenItem(item = pagingItems[index])
+                        HomeScreenItem(
+                            item = pagingItems[index],
+                            onItemPressed = onItemPressed
+                        )
                     }
                 )
 
@@ -120,17 +132,19 @@ private fun LazyListScope.processPagingState(
 @Composable
 private fun HomeScreenItem(
     modifier: Modifier = Modifier,
-    item: HomeScreenItemModel?
+    item: HomeScreenItemModel?,
+    onItemPressed: (String) -> Unit
 ) {
     if (item != null) {
         Box(
             modifier = modifier
                 .heightIn(min = 40.dp)
                 .padding(12.dp)
+                .clickable { onItemPressed(item.objectNumber) }
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = item.name,
+                text = item.title,
                 style = MaterialTheme.typography.bodyLarge
             )
         }

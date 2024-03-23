@@ -3,7 +3,8 @@ package com.zagart.museum.core.data.di
 import android.content.Context
 import androidx.room.Room
 import com.zagart.museum.core.data.AppDatabase
-import com.zagart.museum.home.data.daos.ArtObjectDao
+import com.zagart.museum.details.data.daos.ArtObjectDetailsDao
+import com.zagart.museum.home.data.daos.ArtObjectShortDao
 import com.zagart.museum.home.data.daos.RemoteKeyDao
 import dagger.Module
 import dagger.Provides
@@ -23,8 +24,13 @@ object CoreDataModule {
     }
 
     @Provides
-    fun provideArtObjectsDao(database: AppDatabase): ArtObjectDao {
-        return database.artObjectDao()
+    fun provideArtObjectShortDao(database: AppDatabase): ArtObjectShortDao {
+        return database.artObjectShortDao()
+    }
+
+    @Provides
+    fun provideArtObjectDetailsDao(database: AppDatabase): ArtObjectDetailsDao {
+        return database.artObjectDetailsDao()
     }
 
     @Provides

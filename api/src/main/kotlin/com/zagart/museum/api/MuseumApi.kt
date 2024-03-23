@@ -1,7 +1,9 @@
 package com.zagart.museum.api
 
+import com.zagart.museum.api.model.ArtObjectDetailsResponse
 import com.zagart.museum.api.model.ArtObjectsResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
@@ -18,8 +20,15 @@ interface MuseumApi {
     suspend fun requestArtObjects(
         @Query("key") apiKey: String = API_KEY,
         @Query("ps") pageSize: Int = PAGE_SIZE,
-        @Query("p") page: Int
+        @Query("p") page: Int,
+        @Query("s") sorting: String = "chronologic",
     ): ArtObjectsResponse
+
+    @GET("api/en/collection/{objectNumber}")
+    suspend fun requestArtObjectDetails(
+        @Path("objectNumber") objectNumber: String = API_KEY,
+        @Query("key") apiKey: String = API_KEY
+    ): ArtObjectDetailsResponse
 
     companion object {
         val CACHE_EXPIRE_TIME = TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES)
