@@ -9,7 +9,11 @@ fun ArtObjectDto.dtoAsDomainModel(): ArtObject {
         id = id,
         title = title,
         objectNumber = objectNumber,
-        description = description
+        description = description,
+        principalOrFirstMaker = principalOrFirstMaker ?: "",
+        hasImage = hasImage,
+        showImage = showImage,
+        imageUrl = webImage?.url ?: ""
     )
 }
 
@@ -18,7 +22,11 @@ fun ArtObjectDetailsEntity.entityAsDomainModel(): ArtObject {
         id = id,
         title = title,
         objectNumber = objectNumber,
-        description = description
+        description = description,
+        principalOrFirstMaker = author,
+        hasImage = hasImage,
+        showImage = showImage,
+        imageUrl = imageUrl
     )
 }
 
@@ -27,6 +35,10 @@ fun ArtObjectDto.dtoAsEntityModel(): ArtObjectDetailsEntity {
         id = id,
         title = title,
         objectNumber = objectNumber,
-        description = description ?: ""
+        description = description ?: "",
+        author = principalOrFirstMaker ?: "",
+        hasImage = hasImage,
+        showImage = showImage,
+        imageUrl = webImage?.url ?: ""
     )
 }

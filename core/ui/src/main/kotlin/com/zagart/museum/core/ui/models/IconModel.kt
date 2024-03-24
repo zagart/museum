@@ -1,4 +1,4 @@
-package com.zagart.museum.ui.models
+package com.zagart.museum.core.ui.models
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

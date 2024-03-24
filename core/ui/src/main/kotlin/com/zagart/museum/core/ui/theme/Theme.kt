@@ -1,4 +1,4 @@
-package com.zagart.museum.ui.theme
+package com.zagart.museum.core.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

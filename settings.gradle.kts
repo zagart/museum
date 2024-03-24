@@ -20,6 +20,7 @@ include(":app")
 
 include(":core:data")
 include(":core:di")
+include(":core:ui")
 
 include(":features:details:data")
 include(":features:details:presentation")
@@ -33,4 +34,3 @@ include(":features:settings:data")
 include(":features:settings:presentation")
 
 include(":shared:strings")
-include(":shared:ui")

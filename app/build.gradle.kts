@@ -54,8 +54,9 @@ android {
         addHomeFeature()
         addDetailsFeature()
 
-        implementation(project(":core:di"))
         implementation(project(":core:data"))
+        implementation(project(":core:di"))
+        implementation(project(":core:ui"))
         implementation(project(":shared:strings"))
     }
 }

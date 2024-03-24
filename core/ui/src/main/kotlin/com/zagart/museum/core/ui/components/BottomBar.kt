@@ -1,4 +1,4 @@
-package com.zagart.museum.ui.components
+package com.zagart.museum.core.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
-import com.zagart.museum.ui.animations.applyZoomIn
-import com.zagart.museum.ui.models.IconModel
+import com.zagart.museum.core.ui.animations.applyZoomIn
+import com.zagart.museum.core.ui.models.IconModel
 
 @Composable
 fun BottomBar(

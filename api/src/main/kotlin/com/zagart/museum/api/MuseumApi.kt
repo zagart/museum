@@ -18,10 +18,11 @@ interface MuseumApi {
 
     @GET("api/en/collection")
     suspend fun requestArtObjects(
+        @Query("imgonly") withImagesOnly: Boolean = true,
         @Query("key") apiKey: String = API_KEY,
         @Query("ps") pageSize: Int = PAGE_SIZE,
         @Query("p") page: Int,
-        @Query("s") sorting: String = "chronologic",
+        @Query("s") sorting: String = "artist",
     ): ArtObjectsResponse
 
     @GET("api/en/collection/{objectNumber}")

@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.zagart.museum.details.presentation.DetailsViewModel
 import com.zagart.museum.home.presentation.HomeViewModel
-import com.zagart.museum.ui.MuseumApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.zagart.museum.ui
+package com.zagart.museum
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
@@ -12,14 +12,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.zagart.museum.core.ui.components.BottomBar
+import com.zagart.museum.core.ui.icons.IconsProvider
+import com.zagart.museum.core.ui.models.IconModel
+import com.zagart.museum.core.ui.theme.MuseumTheme
 import com.zagart.museum.details.presentation.DetailsScreen
 import com.zagart.museum.details.presentation.DetailsViewModel
 import com.zagart.museum.home.presentation.HomeScreen
 import com.zagart.museum.home.presentation.HomeViewModel
-import com.zagart.museum.ui.components.BottomBar
-import com.zagart.museum.ui.icons.IconsProvider
-import com.zagart.museum.ui.models.IconModel
-import com.zagart.museum.ui.theme.MuseumTheme
+import com.zagart.museum.shared.strings.R
 
 @Composable
 fun MuseumApp(
@@ -35,7 +36,7 @@ fun MuseumApp(
                 BottomBar(
                     items = listOf(
                         IconModel(
-                            name = stringResource(id = com.zagart.museum.shared.strings.R.string.nav_text_home),
+                            name = stringResource(id = R.string.nav_text_home),
                             activeIcon = IconsProvider.getHomeIcon(true),
                             passiveIcon = IconsProvider.getHomeIcon(false),
                             onItemPressed = {
@@ -43,7 +44,7 @@ fun MuseumApp(
                             }
                         ),
                         IconModel(
-                            name = stringResource(id = com.zagart.museum.shared.strings.R.string.nav_text_settings),
+                            name = stringResource(id = R.string.nav_text_settings),
                             activeIcon = IconsProvider.getSettingsIcon(true),
                             passiveIcon = IconsProvider.getSettingsIcon(false),
                             onItemPressed = {

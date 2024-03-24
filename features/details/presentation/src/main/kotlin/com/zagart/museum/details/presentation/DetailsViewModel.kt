@@ -26,6 +26,10 @@ class DetailsViewModel @Inject constructor(
     )
 
     fun prepare(objectNumber: String) {
+        if (_state.value !is DetailsScreenState.Loading) {
+            _state.value = DetailsScreenState.Loading
+        }
+
         viewModelScope.launch {
             detailsUseCase(objectNumber).collectLatest { detailsResult ->
                 if (detailsResult.isSuccess) {

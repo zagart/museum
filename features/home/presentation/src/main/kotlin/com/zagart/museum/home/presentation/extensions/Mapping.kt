@@ -7,6 +7,9 @@ fun ArtObject.toUiModel(): HomeScreenItemModel {
     return HomeScreenItemModel(
         id = id,
         title = title,
-        objectNumber = objectNumber
+        objectNumber = objectNumber,
+        author = principalOrFirstMaker,
+        withAuthorHeader = withAuthorHeader,
+        imageUrl = imageUrl
     )
 }

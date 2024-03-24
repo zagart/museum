@@ -9,5 +9,9 @@ data class ArtObjectDetailsEntity(
     val id: String,
     val title: String,
     val objectNumber: String,
-    val description: String
+    val description: String,
+    val author: String,
+    val hasImage: Boolean,
+    val showImage: Boolean,
+    val imageUrl: String
 )

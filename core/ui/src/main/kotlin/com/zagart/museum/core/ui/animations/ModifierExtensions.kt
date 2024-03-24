@@ -1,4 +1,4 @@
-package com.zagart.museum.ui.animations
+package com.zagart.museum.core.ui.animations
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.runtime.Composable

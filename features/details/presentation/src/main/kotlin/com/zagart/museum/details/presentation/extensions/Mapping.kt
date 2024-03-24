@@ -8,6 +8,8 @@ fun ArtObject.domainAsUiModel(): DetailsModel {
         id = id,
         title = title,
         objectNumber = objectNumber,
-        description = description ?: ""
+        description = description ?: "",
+        author = principalOrFirstMaker,
+        imageUrl = imageUrl
     )
 }

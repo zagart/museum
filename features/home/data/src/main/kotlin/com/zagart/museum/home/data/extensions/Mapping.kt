@@ -5,12 +5,16 @@ import com.zagart.museum.home.data.models.ArtObjectShortEntity
 import com.zagart.museum.home.domain.models.ArtObject
 
 fun List<ArtObjectDto>.dtosAtEntityList(): List<ArtObjectShortEntity> {
-    return map {
+    return map { dto ->
         ArtObjectShortEntity(
-            id = it.id,
-            title = it.title,
-            objectNumber = it.objectNumber,
-            date = System.currentTimeMillis()
+            id = dto.id,
+            title = dto.title,
+            objectNumber = dto.objectNumber,
+            date = System.currentTimeMillis(),
+            author = dto.principalOrFirstMaker ?: "",
+            hasImage = dto.hasImage,
+            showImage = dto.showImage,
+            imageUrl = dto.webImage?.url ?: ""
         )
     }
 }
@@ -20,6 +24,10 @@ fun ArtObjectShortEntity.toDomainModel(): ArtObject {
         id = id,
         title = title,
         objectNumber = objectNumber,
-        description = null
+        description = null,
+        principalOrFirstMaker = author,
+        hasImage = hasImage,
+        showImage = showImage,
+        imageUrl = imageUrl
     )
 }
