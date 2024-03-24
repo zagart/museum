@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ArtObjectRemoteSource @Inject constructor(
-    @IoDispatcher
-    private val ioDispatcher: CoroutineDispatcher,
-    private val api: MuseumApi
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher, private val api: MuseumApi
 ) {
 
-    internal fun getByPage(page: Int): Flow<Result<List<ArtObjectDto>>> {
+    internal fun getByPage(page: Int, pageSize: Int): Flow<Result<List<ArtObjectDto>>> {
         return flow {
-            emit(runCatching { api.requestArtObjects(page = page).artObjects })
+            emit(runCatching {
+                api.requestArtObjects(page = page, pageSize = pageSize).artObjects
+            })
         }.flowOn(ioDispatcher)
     }
 }

@@ -13,9 +13,12 @@ interface ArtObjectShortDao {
     @Query("DELETE FROM ArtObjectShortEntity")
     fun removeAll()
 
-    @Query("SELECT * FROM ArtObjectShortEntity ORDER BY page")
+    @Query("SELECT * FROM ArtObjectShortEntity ORDER BY `index`")
     fun getAll(): PagingSource<Int, ArtObjectShortEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(entities: List<ArtObjectShortEntity>)
+
+    @Query("SELECT date FROM ArtObjectShortEntity ORDER BY date DESC LIMIT 1")
+    fun getCacheCreationDate(): Long
 }

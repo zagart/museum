@@ -10,10 +10,8 @@ import androidx.paging.RemoteMediator
 import androidx.paging.map
 import com.zagart.museum.api.MuseumApi
 import com.zagart.museum.api.PAGE_SIZE
-import com.zagart.museum.home.data.extensions.asRemoteKeyEntity
 import com.zagart.museum.home.data.extensions.toDomainModel
 import com.zagart.museum.home.data.models.ArtObjectShortEntity
-import com.zagart.museum.home.data.models.RemoteKeyEntity
 import com.zagart.museum.home.data.sources.ArtObjectLocalSource
 import com.zagart.museum.home.data.sources.ArtObjectRemoteSource
 import com.zagart.museum.home.domain.models.ArtObject
@@ -23,8 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import javax.inject.Inject
 
-
-//TODO: Transaction for ArtObjectEntity + RemoteKeyEntity (add Foreign Key)
 class ArtObjectRepositoryImpl @Inject constructor(
     private val localSource: ArtObjectLocalSource,
     private val remoteSource: ArtObjectRemoteSource
@@ -34,7 +30,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
     override fun getArtObjectsPagingData(): Flow<PagingData<ArtObject>> {
         return Pager(
             config = PagingConfig(
-                pageSize = PAGE_SIZE
+                pageSize = PAGE_SIZE, prefetchDistance = 1, initialLoadSize = PAGE_SIZE
             ),
             pagingSourceFactory = { localSource.getAll() },
             remoteMediator = ArtObjectsMediator(localSource, remoteSource)
@@ -63,81 +59,46 @@ class ArtObjectRepositoryImpl @Inject constructor(
             loadType: LoadType, state: PagingState<Int, ArtObjectShortEntity>
         ): MediatorResult {
             val page: Int = when (loadType) {
-                LoadType.REFRESH -> {
-                    getClosestKey(state)?.nextPage?.minus(1) ?: 1
-                }
-
-                LoadType.PREPEND -> {
-                    getFirstKey(state).let { key ->
-                        key?.previousPage ?: return MediatorResult.Success(key != null)
-                    }
-                }
+                LoadType.REFRESH -> 1
+                LoadType.PREPEND -> return MediatorResult.Success(
+                    endOfPaginationReached = true
+                )
 
                 LoadType.APPEND -> {
-                    getLastKey(state).let { key ->
-                        key?.nextPage ?: return MediatorResult.Success(key != null)
+                    state.lastItemOrNull().let { lastItem ->
+                        if (lastItem == null) 2 else (lastItem.index / state.config.pageSize) + 1
                     }
                 }
             }
 
-            val loadingResult = runCatching<Boolean> {
-                val pageItemsResult = remoteSource.getByPage(page).single()
+            val pageItemsResult = remoteSource.getByPage(
+                page = page, pageSize = state.config.pageSize
+            ).single()
 
-                if (pageItemsResult.isSuccess) {
-                    val dtos = pageItemsResult.getOrThrow()
-                    val stopPagination = dtos.isEmpty()
+            if (pageItemsResult.isSuccess) {
+                val dtos = pageItemsResult.getOrThrow()
+                val stopPagination = dtos.isEmpty()
 
-                    if (loadType == LoadType.REFRESH) {
-                        localSource.removeAll()
-                    }
+                if (loadType == LoadType.REFRESH) {
+                    localSource.removeAll()
+                }
 
-                    val insertionResult = localSource.insertPage(page, dtos, dtos.map { dto ->
-                        dto.asRemoteKeyEntity(page, stopPagination)
-                    }).single()
+                val insertionResult = localSource.insertAll(dtos).single()
 
-                    if (insertionResult.isFailure) {
-                        //Since cache is SOT, we can't proceed with DTOs only
-                        return MediatorResult.Error(
-                            insertionResult.exceptionOrNull() ?: defaultMediatorException
-                        )
-                    }
-
-                    return@runCatching stopPagination
+                return if (insertionResult.isFailure) {
+                    //Since cache is SOT, we can't proceed with DTOs only
+                    MediatorResult.Error(
+                        insertionResult.exceptionOrNull() ?: defaultMediatorException
+                    )
                 } else {
-                    return MediatorResult.Error(
-                        pageItemsResult.exceptionOrNull() ?: defaultMediatorException
+                    MediatorResult.Success(
+                        endOfPaginationReached = stopPagination
                     )
                 }
-            }
-
-            return if (loadingResult.isSuccess) {
-                MediatorResult.Success(endOfPaginationReached = loadingResult.getOrThrow())
             } else {
-                MediatorResult.Error(loadingResult.exceptionOrNull() ?: defaultMediatorException)
-            }
-        }
-
-        private suspend fun getClosestKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
-            return state.anchorPosition?.let { position ->
-                state.closestItemToPosition(position)?.id?.let { id ->
-                    localSource.getKeyByArtObjectId(id).single().getOrNull()
-                }
-            }
-        }
-
-        private suspend fun getFirstKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
-            return state.pages.firstOrNull {
-                it.data.isNotEmpty()
-            }?.data?.firstOrNull()?.let { artObject ->
-                localSource.getKeyByArtObjectId(artObject.id).single().getOrNull()
-            }
-        }
-
-        private suspend fun getLastKey(state: PagingState<Int, ArtObjectShortEntity>): RemoteKeyEntity? {
-            return state.pages.lastOrNull {
-                it.data.isNotEmpty()
-            }?.data?.lastOrNull()?.let { artObject ->
-                localSource.getKeyByArtObjectId(artObject.id).single().getOrNull()
+                return MediatorResult.Error(
+                    pageItemsResult.exceptionOrNull() ?: defaultMediatorException
+                )
             }
         }
     }

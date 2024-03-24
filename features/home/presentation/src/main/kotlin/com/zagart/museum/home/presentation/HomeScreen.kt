@@ -1,16 +1,17 @@
 package com.zagart.museum.home.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 
 @Composable
 fun HomeScreen(
@@ -79,7 +82,7 @@ private fun HomeScreen(
             LazyColumn {
                 items(
                     count = pagingItems.itemCount,
-                    key = { index -> pagingItems[index]?.id ?: index },
+                    key = pagingItems.itemKey { it.id },
                     itemContent = { index ->
                         HomeScreenItem(
                             item = pagingItems[index],
@@ -138,12 +141,15 @@ private fun HomeScreenItem(
     if (item != null) {
         Box(
             modifier = modifier
-                .heightIn(min = 40.dp)
-                .padding(12.dp)
+                .heightIn(min = 80.dp)
+                .wrapContentHeight()
                 .clickable { onItemPressed(item.objectNumber) }
         ) {
             Text(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(12.dp)
+                    .fillMaxSize(),
                 text = item.title,
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -170,13 +176,13 @@ private fun RefreshLoadingState() {
 @Composable
 private fun AppendLoadingState() {
     Box(
-        modifier = Modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
