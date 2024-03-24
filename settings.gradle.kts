@@ -31,6 +31,7 @@ include(":features:home:domain")
 include(":features:home:presentation")
 
 include(":features:settings:data")
+include(":features:settings:domain")
 include(":features:settings:presentation")
 
 include(":shared:strings")

@@ -77,3 +77,11 @@ fun Project.addDetailsFeature() {
         implementation(project(":features:details:presentation"))
     }
 }
+
+fun Project.addSettingsFeature() {
+    dependencies {
+        implementation(project(":features:settings:data"))
+        implementation(project(":features:settings:domain"))
+        implementation(project(":features:settings:presentation"))
+    }
+}

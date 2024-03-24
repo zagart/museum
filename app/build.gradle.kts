@@ -53,6 +53,7 @@ android {
     dependencies {
         addHomeFeature()
         addDetailsFeature()
+        addSettingsFeature()
 
         implementation(project(":core:data"))
         implementation(project(":core:di"))

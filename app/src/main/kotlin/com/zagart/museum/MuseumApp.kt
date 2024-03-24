@@ -1,13 +1,17 @@
 package com.zagart.museum
 
-import android.app.Activity
-import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -20,17 +24,28 @@ import com.zagart.museum.details.presentation.DetailsScreen
 import com.zagart.museum.details.presentation.DetailsViewModel
 import com.zagart.museum.home.presentation.HomeScreen
 import com.zagart.museum.home.presentation.HomeViewModel
+import com.zagart.museum.settings.presentation.ui.SettingsScreen
+import com.zagart.museum.settings.presentation.viewmodels.SettingsScreenState
+import com.zagart.museum.settings.presentation.viewmodels.SettingsViewModel
 import com.zagart.museum.shared.strings.R
 
 @Composable
 fun MuseumApp(
     homeViewModel: HomeViewModel,
     detailsViewModel: DetailsViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
-    val context = LocalContext.current
     val navController = rememberNavController()
+    val homeListState = rememberLazyListState()
+    var forceDarkTheme by rememberSaveable { mutableStateOf(false) }
+    val settingsScreenState by settingsViewModel.state.collectAsStateWithLifecycle()
 
-    MuseumTheme {
+    forceDarkTheme = when (val currentState = settingsScreenState) {
+        is SettingsScreenState.Success -> currentState.forceDarkTheme
+        else -> false
+    }
+
+    MuseumTheme(darkTheme = forceDarkTheme || isSystemInDarkTheme()) {
         Scaffold(
             bottomBar = {
                 BottomBar(
@@ -64,14 +79,10 @@ fun MuseumApp(
                     composable("items") {
                         HomeScreen(
                             viewModel = homeViewModel,
+                            listState = homeListState,
                             onItemPressed = { objectNumber ->
                                 detailsViewModel.prepare(objectNumber)
                                 navController.navigate("details")
-                            },
-                            onBackPressed = {
-                                if (context is Activity) {
-                                    context.finish()
-                                }
                             }
                         )
                     }
@@ -85,11 +96,7 @@ fun MuseumApp(
                     }
                 }
                 composable("settings") {
-                    BackHandler {
-                        if (context is Activity) {
-                            context.finish()
-                        }
-                    }
+                    SettingsScreen(viewModel = settingsViewModel)
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.zagart.museum.home.presentation
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,9 +21,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -50,17 +53,27 @@ import com.zagart.museum.shared.strings.R
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel, onItemPressed: (String) -> Unit, onBackPressed: () -> Unit
+    viewModel: HomeViewModel,
+    listState: LazyListState,
+    onItemPressed: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val pagingItems = viewModel.artObjectsPagingData.collectAsLazyPagingItems()
 
-    BackHandler { onBackPressed() }
-    HomeScreen(pagingItems = pagingItems, onItemPressed = onItemPressed)
+    BackHandler {
+        if (context is Activity) {
+            context.finish()
+        }
+    }
+
+    HomeScreen(pagingItems = pagingItems, onItemPressed = onItemPressed, listState = listState)
 }
 
 @Composable
 private fun HomeScreen(
-    pagingItems: LazyPagingItems<HomeScreenItemModel>, onItemPressed: (String) -> Unit
+    listState: LazyListState,
+    pagingItems: LazyPagingItems<HomeScreenItemModel>,
+    onItemPressed: (String) -> Unit
 ) {
     if (pagingItems.loadState.refresh == LoadState.Loading) {
         LoadingScreen()
@@ -68,6 +81,7 @@ private fun HomeScreen(
     }
 
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -209,7 +223,7 @@ private fun ErrorState(
                 modifier = Modifier.size(64.dp),
                 imageVector = Icons.Rounded.Warning,
                 contentDescription = "Error icon",
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.error
             )
         }
 
@@ -219,9 +233,15 @@ private fun ErrorState(
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium
         )
-        Button(onClick = { pagingItems.refresh() }, content = {
-            Text(text = stringResource(id = R.string.button_name_refresh))
-        })
+        Button(
+            colors = ButtonDefaults.buttonColors().copy(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.error
+            ),
+            onClick = { pagingItems.refresh() },
+            content = {
+                Text(text = stringResource(id = R.string.button_name_refresh))
+            })
     }
 }
 
