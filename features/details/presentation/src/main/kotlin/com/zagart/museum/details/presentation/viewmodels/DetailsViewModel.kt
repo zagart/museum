@@ -1,9 +1,10 @@
-package com.zagart.museum.details.presentation
+package com.zagart.museum.details.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zagart.museum.details.presentation.extensions.domainAsUiModel
-import com.zagart.museum.details.presentation.models.DetailsModel
+import com.zagart.museum.details.presentation.models.DetailsUiModel
 import com.zagart.museum.domain.usecases.GetArtObjectDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,10 @@ class DetailsViewModel @Inject constructor(
                         details = detailsResult.getOrThrow().domainAsUiModel()
                     )
                 } else {
+                    Log.e(
+                        "DetailsViewModel",
+                        detailsResult.exceptionOrNull()?.message ?: "Unknown failure"
+                    )
                     _state.value = DetailsScreenState.Failure
                 }
             }
@@ -50,6 +55,6 @@ sealed interface DetailsScreenState {
     data object Failure : DetailsScreenState
 
     data class Success(
-        val details: DetailsModel
+        val details: DetailsUiModel
     ) : DetailsScreenState
 }

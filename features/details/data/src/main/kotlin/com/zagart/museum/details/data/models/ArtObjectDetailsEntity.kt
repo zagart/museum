@@ -14,11 +14,8 @@ data class ArtObjectDetailsEntity(
     val author: String,
     val hasImage: Boolean,
     val showImage: Boolean,
-    @Embedded val image: ArtObjectDetailsImageEntity? = null
-)
-
-data class ArtObjectDetailsImageEntity(
-    val url: String,
-    val width: Int,
-    val height: Int
+    @Embedded val image: ArtObjectDetailsImageEntity? = null,
+    val productionPlaces: List<String>? = null,
+    @Embedded val dating: ArtObjectDetailsDatingEntity? = null,
+    val principalMakers: List<ArtObjectDetailsPrincipalMakerEntity>? = null
 )

@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.zagart.museum.details.presentation.DetailsViewModel
-import com.zagart.museum.home.presentation.HomeViewModel
+import com.zagart.museum.details.presentation.viewmodels.DetailsViewModel
+import com.zagart.museum.home.presentation.viewmodels.HomeViewModel
 import com.zagart.museum.settings.presentation.viewmodels.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

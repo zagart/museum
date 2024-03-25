@@ -22,10 +22,10 @@ import com.zagart.museum.core.ui.components.TopBar
 import com.zagart.museum.core.ui.icons.IconsProvider
 import com.zagart.museum.core.ui.models.IconModel
 import com.zagart.museum.core.ui.theme.MuseumTheme
-import com.zagart.museum.details.presentation.DetailsScreen
-import com.zagart.museum.details.presentation.DetailsViewModel
-import com.zagart.museum.home.presentation.HomeScreen
-import com.zagart.museum.home.presentation.HomeViewModel
+import com.zagart.museum.details.presentation.ui.DetailsScreen
+import com.zagart.museum.details.presentation.viewmodels.DetailsViewModel
+import com.zagart.museum.home.presentation.ui.HomeScreen
+import com.zagart.museum.home.presentation.viewmodels.HomeViewModel
 import com.zagart.museum.settings.presentation.ui.SettingsScreen
 import com.zagart.museum.settings.presentation.viewmodels.SettingsScreenState
 import com.zagart.museum.settings.presentation.viewmodels.SettingsViewModel
@@ -99,6 +99,9 @@ fun MuseumApp(
                                         navController.navigateUp()
                                     }
                                 )
+                            },
+                            onBackPressed = {
+                                leftTopBarButton = null
                             }
                         )
                     }

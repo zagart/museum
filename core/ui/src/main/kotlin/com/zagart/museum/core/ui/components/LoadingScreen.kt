@@ -21,12 +21,12 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        MessageText(textColor = MaterialTheme.colorScheme.primary, textRes = R.string.text_loading)
+        MessageText(textColor = MaterialTheme.colorScheme.onBackground, textRes = R.string.text_loading)
         CircularProgressIndicator(
             modifier = Modifier
                 .padding(8.dp)
                 .wrapContentSize(),
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

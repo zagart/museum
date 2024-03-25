@@ -15,5 +15,8 @@ data class ArtObjectDto(
     val plaqueDescriptionEnglish: String? = null,
     val principalOrFirstMaker: String? = null,
     val longTitle: String? = null,
-    val permitDownload: Boolean? = null
+    val permitDownload: Boolean? = null,
+    val productionPlaces: List<String>? = null,
+    val dating: DatingDto? = null,
+    val principalMakers: List<PrincipalMakerDto>? = null
 )

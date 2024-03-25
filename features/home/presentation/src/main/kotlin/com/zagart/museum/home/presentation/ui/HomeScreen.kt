@@ -1,4 +1,4 @@
-package com.zagart.museum.home.presentation
+package com.zagart.museum.home.presentation.ui
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -33,9 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -48,11 +47,16 @@ import androidx.paging.compose.itemKey
 import com.zagart.museum.core.ui.components.LoadingScreen
 import com.zagart.museum.core.ui.components.RemoteImage
 import com.zagart.museum.core.ui.configs.DefaultSpacings
+import com.zagart.museum.home.presentation.models.HomeScreenModelUi
+import com.zagart.museum.home.presentation.viewmodels.HomeViewModel
 import com.zagart.museum.shared.strings.R
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel, listState: LazyListState, onItemPressed: (String) -> Unit
+    viewModel: HomeViewModel,
+    listState: LazyListState,
+    onItemPressed: (String) -> Unit,
+    onBackPressed: () -> Unit
 ) {
     val context = LocalContext.current
     val pagingItems = viewModel.artObjectsPagingData.collectAsLazyPagingItems()
@@ -61,6 +65,7 @@ fun HomeScreen(
         if (context is Activity) {
             context.finish()
         }
+        onBackPressed()
     }
 
     HomeScreen(pagingItems = pagingItems, onItemPressed = onItemPressed, listState = listState)
@@ -69,7 +74,7 @@ fun HomeScreen(
 @Composable
 private fun HomeScreen(
     listState: LazyListState,
-    pagingItems: LazyPagingItems<HomeScreenItemModel>,
+    pagingItems: LazyPagingItems<HomeScreenModelUi>,
     onItemPressed: (String) -> Unit
 ) {
     if (pagingItems.loadState.refresh == LoadState.Loading) {
@@ -82,17 +87,19 @@ private fun HomeScreen(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(count = pagingItems.itemCount,
-            key = pagingItems.itemKey { it.id },
+        items(
+            count = pagingItems.itemCount,
+            key = pagingItems.itemKey { item -> item.id },
             itemContent = { index ->
                 val item = pagingItems[index]
 
                 if (item != null) {
                     if (item.withAuthorHeader) {
                         Text(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(DefaultSpacings.itemPadding),
                             text = item.author,
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
                         )
                     }
 
@@ -105,7 +112,7 @@ private fun HomeScreen(
 }
 
 private fun LazyListScope.processPagingState(
-    loadState: LoadStates?, pagingItems: LazyPagingItems<HomeScreenItemModel>
+    loadState: LoadStates?, pagingItems: LazyPagingItems<HomeScreenModelUi>
 ) {
     item {
         if (loadState?.append == LoadState.Loading) {
@@ -135,11 +142,10 @@ private fun LazyListScope.processPagingState(
 
 @Composable
 private fun HomeScreenItem(
-    modifier: Modifier = Modifier, item: HomeScreenItemModel, onItemPressed: (String) -> Unit
+    modifier: Modifier = Modifier, item: HomeScreenModelUi, onItemPressed: (String) -> Unit
 ) {
     Surface(
-        modifier = modifier.clip(MaterialTheme.shapes.small),
-        shadowElevation = DefaultSpacings.itemPadding
+        modifier = modifier.clip(MaterialTheme.shapes.small)
     ) {
         Box(
             modifier = Modifier
@@ -157,20 +163,21 @@ private fun HomeScreenItem(
                         .clip(MaterialTheme.shapes.small)
                         .border(
                             4.dp,
-                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.secondaryContainer,
                             MaterialTheme.shapes.small
-                        )
-                        .shadow(12.dp)
-                        .wrapContentWidth(),
+                        ),
+                    height = imageHeightDp,
+                    width = imageWidthDp,
                     imageUrl = image.url,
                     contentDescription = item.title
                 )
 
                 val innerPadding = 8.dp
+                val textSectionHeight = imageHeightDp - innerPadding.times(2f)
 
                 Column(
                     modifier = Modifier
-                        .height(imageHeightDp - innerPadding.times(2))
+                        .height(textSectionHeight)
                         .fillMaxWidth()
                         .padding(start = imageWidthDp, end = innerPadding)
                         .align(Alignment.Center)
@@ -182,17 +189,29 @@ private fun HomeScreenItem(
                         )
                         .background(MaterialTheme.colorScheme.secondary),
                 ) {
+                    val titleHeight = textSectionHeight.times(0.75f)
+
                     Text(
-                        modifier = Modifier.padding(DefaultSpacings.itemPadding),
+                        modifier = Modifier
+                            .height(titleHeight)
+                            .padding(DefaultSpacings.itemPadding),
                         text = item.title,
-                        style = MaterialTheme.typography.labelMedium,
-                        maxLines = 3,
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSecondary
                     )
+                    item.productionPlaces?.let { productionPlaces ->
+                        MetadataText(
+                            modifier = Modifier
+                                .height(textSectionHeight.times(0.25f))
+                                .padding(horizontal = DefaultSpacings.itemPadding),
+                            text = productionPlaces,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
                 }
             }
-
         }
     }
 }
@@ -209,7 +228,7 @@ private fun ErrorState(
     modifier: Modifier,
     isPaginatingError: Boolean,
     error: Throwable,
-    pagingItems: LazyPagingItems<HomeScreenItemModel>
+    pagingItems: LazyPagingItems<HomeScreenModelUi>
 ) {
     Column(
         modifier = modifier,

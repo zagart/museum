@@ -29,11 +29,14 @@ fun TopBar(
     leftAction: IconModel? = null,
     rightAction: IconModel? = null
 ) {
+    val backgroundColor = MaterialTheme.colorScheme.secondaryContainer
+    val onBackgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .sizeIn(minHeight = 64.dp)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(backgroundColor)
     ) {
         if (leftAction != null) {
             IconButton(
@@ -46,7 +49,7 @@ fun TopBar(
             ) {
                 Icon(
                     painter = rememberVectorPainter(image = leftAction.activeIcon),
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = onBackgroundColor,
                     contentDescription = leftAction.name
                 )
             }
@@ -62,7 +65,7 @@ fun TopBar(
                 ),
             text = title,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimary),
+            style = MaterialTheme.typography.headlineMedium.copy(color = onBackgroundColor),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -78,7 +81,7 @@ fun TopBar(
             ) {
                 Icon(
                     painter = rememberVectorPainter(image = rightAction.activeIcon),
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = onBackgroundColor,
                     contentDescription = rightAction.name
                 )
             }

@@ -31,7 +31,9 @@ class ArtObjectDetailsRepositoryImpl @Inject constructor(
             result.getOrNull() == true
         }
 
-        return if (cacheFlow.single().isSuccess) {
+        val result = cacheFlow.single()
+
+        return if (result.isSuccess) {
             cacheFlow.map { cacheResult -> cacheResult.map { entity -> entity.entityAsDomainModel() } }
         } else {
             networkFlow.combine(languageFlow) { networkResult, useEnglish ->
@@ -41,7 +43,10 @@ class ArtObjectDetailsRepositoryImpl @Inject constructor(
                         dto.dtoAsDomainModel(useEnglish)
                     }
                 } else {
-                    Result.failure(Throwable("Failure during details loading for $objectNumber"))
+                    Result.failure(
+                        networkResult.exceptionOrNull()
+                            ?: Throwable("Failure during details loading for $objectNumber")
+                    )
                 }
             }
         }

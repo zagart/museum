@@ -10,10 +10,8 @@ data class ArtObject(
     val hasImage: Boolean,
     val showImage: Boolean,
     val image: ArtObjectImage?,
+    val productionPlaces: List<String>? = null,
+    val dating: ArtObjectDating? = null,
+    val principalMakers: List<ArtObjectPrincipalMaker>? = null
 )
 
-data class ArtObjectImage(
-    val url: String,
-    val width: Int,
-    val height: Int
-)

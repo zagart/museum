@@ -1,4 +1,4 @@
-package com.zagart.museum.home.presentation
+package com.zagart.museum.home.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.zagart.museum.home.domain.usecases.GetArtObjectsByAuthorUseCase
 import com.zagart.museum.home.presentation.extensions.toUiModel
+import com.zagart.museum.home.presentation.models.HomeScreenModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,7 +19,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     //PagingData provides state handling, so we do not need to have own one
-    val artObjectsPagingData: Flow<PagingData<HomeScreenItemModel>>
+    val artObjectsPagingData: Flow<PagingData<HomeScreenModelUi>>
 
     init {
         artObjectsPagingData = artObjectsUseCase().map { pagingData ->

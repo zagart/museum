@@ -14,7 +14,8 @@ data class ArtObjectShortEntity(
     val author: String,
     val hasImage: Boolean,
     val showImage: Boolean,
-    @Embedded val image: ArtObjectShortImageEntity? = null
+    @Embedded val image: ArtObjectShortImageEntity? = null,
+    val productionPlaces: List<String>? = null
 )
 
 data class ArtObjectShortImageEntity(
