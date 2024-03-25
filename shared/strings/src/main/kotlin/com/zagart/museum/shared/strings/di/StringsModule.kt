@@ -16,7 +16,8 @@ object StringsModule {
     @SettingsKeys
     fun provideSettingsKeys(): List<StringKey> {
         return listOf(
-            StringKey(StringProvider.DARK_THEME, Boolean::class)
+            StringKey(StringProvider.DARK_THEME, Boolean::class),
+            StringKey(StringProvider.LANGUAGE, String::class, StringProvider.ENGLISH)
         )
     }
 }

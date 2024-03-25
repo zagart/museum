@@ -59,5 +59,6 @@ android {
         implementation(project(":core:di"))
         implementation(project(":core:ui"))
         implementation(project(":shared:strings"))
+        implementation(libs.appcompat)
     }
 }

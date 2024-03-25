@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlin.reflect.KClass
@@ -19,7 +20,7 @@ open class DataStoreLocalSource(
     protected val keys: List<Key>
 ) {
 
-    private val dataStore = PreferenceDataStoreFactory.create(produceFile = {
+    protected val dataStore = PreferenceDataStoreFactory.create(produceFile = {
         context.preferencesDataStoreFile(fileName)
     })
 
@@ -34,12 +35,23 @@ open class DataStoreLocalSource(
             if (value == true.toString() || value == false.toString()) {
                 booleans[key] = value.toBooleanStrict()
             } else {
-                strings[key] = value
+                if (value.isBlank()) {
+                    strings[key] = key.default
+                    updateItem(key, key.default)
+                } else {
+                    strings[key] = value
+                }
             }
         }
 
         DataStoreItems(booleans, strings)
     }.flowOn(ioDispatcher)
+
+    protected fun getStringItem(keyName: String): Flow<Result<String>> {
+        return dataStore.data.map { preferences ->
+            runCatching { preferences[stringPreferencesKey(keyName)] ?: "" }
+        }
+    }
 
     protected suspend fun updateItem(key: Key, enabled: Boolean) {
         dataStore.updateData { preferences ->
@@ -80,7 +92,8 @@ open class DataStoreLocalSource(
 
 data class Key(
     val name: String,
-    val clazz: KClass<out Any>
+    val clazz: KClass<out Any>,
+    val default: String = ""
 )
 
 data class DataStoreItems(

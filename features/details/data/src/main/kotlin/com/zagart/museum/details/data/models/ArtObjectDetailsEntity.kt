@@ -1,5 +1,6 @@
 package com.zagart.museum.details.data.models
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,5 +14,11 @@ data class ArtObjectDetailsEntity(
     val author: String,
     val hasImage: Boolean,
     val showImage: Boolean,
-    val imageUrl: String
+    @Embedded val image: ArtObjectDetailsImageEntity? = null
+)
+
+data class ArtObjectDetailsImageEntity(
+    val url: String,
+    val width: Int,
+    val height: Int
 )

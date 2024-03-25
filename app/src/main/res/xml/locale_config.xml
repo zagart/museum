@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en-AU" /> <!-- English (Australia) -->
+    <locale android:name="en-CA" /> <!-- English (Canada) -->
+    <locale android:name="en-GB" /> <!-- English (United Kingdom) -->
+    <locale android:name="en-IN" /> <!-- English (India) -->
+    <locale android:name="en-US" /> <!-- English (United States) -->
+    <locale android:name="en-XA" /> <!-- English (Pseudo-Accents) -->
+    <locale android:name="nl" /> <!-- Dutch -->
+</locale-config>

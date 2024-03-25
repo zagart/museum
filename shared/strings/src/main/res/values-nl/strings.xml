@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Museum</string>
+    <string name="nav_text_home">Thuis</string>
+    <string name="nav_text_settings">Instellingen</string>
+    <string name="text_loading">Bezig met laden…</string>
+    <string name="text_failure">Au, er is iets misgegaan...</string>
+    <string name="button_name_refresh">Vernieuwen</string>
+    <string name="settings_item_dark_theme">Donker thema</string>
+    <string name="settings_item_language">Taal</string>
+    <string name="language_en">Engels</string>
+    <string name="language_nl">Nederlands</string>
+</resources>

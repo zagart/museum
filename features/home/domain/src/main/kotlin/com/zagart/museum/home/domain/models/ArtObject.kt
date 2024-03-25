@@ -9,5 +9,11 @@ data class ArtObject(
     val withAuthorHeader: Boolean = false,
     val hasImage: Boolean,
     val showImage: Boolean,
-    val imageUrl: String
+    val image: ArtObjectImage?,
+)
+
+data class ArtObjectImage(
+    val url: String,
+    val width: Int,
+    val height: Int
 )

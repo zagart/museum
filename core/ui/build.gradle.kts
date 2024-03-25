@@ -13,4 +13,5 @@ dependencies {
     implementation(project(":shared:strings"))
     setupCompose()
     implementation(libs.material.icons.extended)
+    implementation(libs.coil)
 }

@@ -4,5 +4,6 @@ import androidx.annotation.StringRes
 
 data class SettingsItem(
     @StringRes val firstLineRes : Int,
-    val enabled : Boolean
+    val enabled : Boolean = false,
+    val value : String = ""
 )

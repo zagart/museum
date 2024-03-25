@@ -6,5 +6,11 @@ data class DetailsModel(
     val objectNumber: String,
     val description: String,
     val author: String,
-    val imageUrl: String
+    val image: DetailsImage? = null
+)
+
+data class DetailsImage(
+    val url: String,
+    val height: Int,
+    val width: Int
 )

@@ -1,5 +1,6 @@
 package com.zagart.museum.settings.data.repositories
 
+import com.zagart.museum.settings.data.extensions.asDomainModel
 import com.zagart.museum.settings.data.models.SettingsItemEntity
 import com.zagart.museum.settings.data.sources.SettingsLocalSource
 import com.zagart.museum.settings.domain.models.SettingsItem
@@ -17,11 +18,16 @@ class SettingsRepositoryImpl @Inject constructor(
         return localSource.getItems().map { result ->
             result.map { entityList ->
                 entityList.map { entity ->
-                    SettingsItem(
-                        StringProvider.getByKey(entity.key),
-                        entity.enabled
-                    )
+                    entity.asDomainModel()
                 }
+            }
+        }
+    }
+
+    override fun getByKey(key: String): Flow<Result<SettingsItem>> {
+        return localSource.getByKey(key).map { result ->
+            result.map { entity ->
+                entity.asDomainModel()
             }
         }
     }
@@ -30,7 +36,8 @@ class SettingsRepositoryImpl @Inject constructor(
         localSource.update(
             SettingsItemEntity(
                 StringProvider.getByResource(item.firstLineRes),
-                item.enabled
+                item.enabled,
+                item.value
             )
         )
     }

@@ -11,6 +11,8 @@ data class ArtObjectDto(
     val showImage: Boolean,
     val webImage: WebImageDto?,
     val description: String? = null,
+    val plaqueDescriptionDutch: String? = null,
+    val plaqueDescriptionEnglish: String? = null,
     val principalOrFirstMaker: String? = null,
     val longTitle: String? = null,
     val permitDownload: Boolean? = null

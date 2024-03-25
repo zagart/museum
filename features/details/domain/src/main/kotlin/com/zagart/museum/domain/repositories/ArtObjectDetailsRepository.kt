@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface ArtObjectDetailsRepository {
 
-    fun getByObjectNumber(objectNumber: String): Flow<Result<ArtObject>>
+    suspend fun getByObjectNumber(objectNumber: String): Flow<Result<ArtObject>>
 }

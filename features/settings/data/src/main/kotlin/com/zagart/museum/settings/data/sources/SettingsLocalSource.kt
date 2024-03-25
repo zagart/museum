@@ -31,7 +31,21 @@ class SettingsLocalSource @Inject constructor(
             val settingsItems = mutableListOf<SettingsItemEntity>()
 
             dataStoreItems.booleans.forEach { boolean ->
-                settingsItems.add(SettingsItemEntity(boolean.key.name, boolean.value))
+                settingsItems.add(
+                    SettingsItemEntity(
+                        key = boolean.key.name,
+                        enabled = boolean.value
+                    )
+                )
+            }
+
+            dataStoreItems.strings.forEach { string ->
+                settingsItems.add(
+                    SettingsItemEntity(
+                        key = string.key.name,
+                        value = string.value
+                    )
+                )
             }
 
             Result.success(settingsItems.toList())
@@ -39,6 +53,23 @@ class SettingsLocalSource @Inject constructor(
     }
 
     suspend fun update(item: SettingsItemEntity) {
-        keys.find { key -> key.name == item.key }?.let { updateItem(it, item.enabled) }
+        keys.find { key -> key.name == item.key }?.let {
+            if (item.value.isNotBlank()) {
+                updateItem(it, item.value)
+            } else {
+                updateItem(it, item.enabled)
+            }
+        }
+    }
+
+    fun getByKey(keyName: String): Flow<Result<SettingsItemEntity>> {
+        return getStringItem(keyName).map { result ->
+            result.map { value ->
+                SettingsItemEntity(
+                    key = keyName,
+                    value = value
+                )
+            }
+        }
     }
 }

@@ -7,5 +7,7 @@ interface SettingsRepository {
 
     fun getAll() : Flow<Result<List<SettingsItem>>>
 
+    fun getByKey(key : String) : Flow<Result<SettingsItem>>
+
     suspend fun update(item: SettingsItem)
 }

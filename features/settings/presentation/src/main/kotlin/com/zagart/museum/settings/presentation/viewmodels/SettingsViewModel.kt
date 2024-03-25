@@ -1,8 +1,11 @@
 package com.zagart.museum.settings.presentation.viewmodels
 
+import android.content.Context
+import android.content.res.Configuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zagart.museum.settings.domain.usecases.GetSettingsUseCase
+import com.zagart.museum.settings.domain.usecases.GetLanguageKeysUseCase
+import com.zagart.museum.settings.domain.usecases.GetSortedSettingsUseCase
 import com.zagart.museum.settings.domain.usecases.UpdateSettingsUseCase
 import com.zagart.museum.settings.presentation.extensions.asDomainModel
 import com.zagart.museum.settings.presentation.extensions.asUiModel
@@ -14,11 +17,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsUseCase: GetSettingsUseCase,
+    private val settingsUseCase: GetSortedSettingsUseCase,
     private val updateUseCase: UpdateSettingsUseCase
 ) : ViewModel() {
 
@@ -39,6 +43,9 @@ class SettingsViewModel @Inject constructor(
 
                     _state.value = SettingsScreenState.Success(
                         forceDarkTheme = darkThemeModel?.enabled ?: false,
+                        languages = GetLanguageKeysUseCase().map { languageKey ->
+                            StringProvider.getByKey(languageKey)
+                        },
                         settings = domainModels.map { domainModel ->
                             domainModel.asUiModel()
                         }
@@ -50,8 +57,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun update(settingsUiModel: SettingsUiModel) {
-        viewModelScope.launch { updateUseCase.invoke(settingsUiModel.asDomainModel()) }
+    fun update(context: Context, settingsItem: SettingsUiModel) {
+        //TODO: Investigate locale forcing for Compose
+        if (settingsItem.firstLineKey == StringProvider.LANGUAGE) {
+            val languageCode = StringProvider.getByResource(settingsItem.value)
+            val locale = Locale(languageCode)
+
+            Locale.setDefault(locale)
+
+            val resources = context.resources
+            val configuration = Configuration(resources.configuration)
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+            context.createConfigurationContext(configuration)
+        }
+
+        viewModelScope.launch {
+            updateUseCase.invoke(settingsItem.asDomainModel())
+        }
     }
 }
 
@@ -61,7 +83,8 @@ sealed interface SettingsScreenState {
     data object Failure : SettingsScreenState
 
     data class Success(
-        val forceDarkTheme: Boolean = false,
+        val forceDarkTheme: Boolean,
+        val languages: List<Int>,
         val settings: List<SettingsUiModel>
     ) : SettingsScreenState
 }

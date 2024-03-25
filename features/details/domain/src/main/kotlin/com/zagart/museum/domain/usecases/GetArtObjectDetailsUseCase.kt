@@ -9,7 +9,7 @@ class GetArtObjectDetailsUseCase @Inject constructor(
     private val repository: ArtObjectDetailsRepository
 ) {
 
-    operator fun invoke(objectNumber: String): Flow<Result<ArtObject>> {
+    suspend operator fun invoke(objectNumber: String): Flow<Result<ArtObject>> {
         return repository.getByObjectNumber(objectNumber)
     }
 }

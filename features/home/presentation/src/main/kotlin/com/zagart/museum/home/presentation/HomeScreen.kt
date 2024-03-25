@@ -35,20 +35,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.zagart.museum.core.ui.components.LoadingScreen
+import com.zagart.museum.core.ui.components.RemoteImage
 import com.zagart.museum.shared.strings.R
 
 @Composable
@@ -159,28 +158,23 @@ private fun HomeScreenItem(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    item.imageUrl?.let { imageUrl ->
+                    item.image?.let { image ->
                         //TODO: Reduce cache image quality
-                        AsyncImage(
+                        val imageHeight = 100.dp
+
+                        RemoteImage(
                             modifier = Modifier
-                                .height(80.dp)
-                                .width(110.dp)
+                                .height(imageHeight)
+                                .width(imageWidthInDp(imageHeight, image.height, image.width))
                                 .clip(MaterialTheme.shapes.small)
-                                .background(MaterialTheme.colorScheme.primary)
                                 .border(
                                     4.dp,
-                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.primaryContainer,
                                     MaterialTheme.shapes.small
                                 )
                                 .wrapContentWidth(),
-                            model = ImageRequest
-                                .Builder(LocalContext.current)
-                                .data(imageUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = item.title,
-                            alignment = Alignment.Center,
-                            contentScale = ContentScale.Crop
+                            imageUrl = image.url,
+                            contentDescription = item.title
                         )
                     }
 
@@ -248,4 +242,17 @@ private fun ErrorState(
 @Composable
 private fun getErrorMessage(error: Throwable): String {
     return error.message ?: stringResource(id = R.string.text_failure)
+}
+
+fun imageWidthInDp(height: Dp, imageHeight: Int, imageWidth: Int): Dp {
+    val maxFactor = 1.5f
+
+    if (imageWidth.toFloat() / imageHeight.toFloat() > maxFactor) {
+        return height.times(maxFactor)
+    }
+
+    val viewHeight = height.value
+    val multiplier = imageHeight.toFloat() / viewHeight
+
+    return Dp((imageWidth.toFloat() / multiplier))
 }
