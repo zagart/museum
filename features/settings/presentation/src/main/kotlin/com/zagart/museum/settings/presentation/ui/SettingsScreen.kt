@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,30 +65,28 @@ private fun SettingsScreen(
         is SettingsScreenState.Loading -> LoadingScreen()
         is SettingsScreenState.Success -> {
             Surface {
-                Column {
-                    LazyColumn(
-                        modifier
-                            .fillMaxWidth()
-                            .wrapContentSize(),
-                        verticalArrangement = Arrangement.spacedBy(DefaultSpacings.itemPadding),
-                        contentPadding = PaddingValues(DefaultSpacings.itemPadding)
-                    ) {
-                        items(state.settings) { settingsItem ->
-                            if (settingsItem.firstLineKey == StringProvider.LANGUAGE) {
-                                LanguageSelector(
-                                    state = state,
-                                    settingsItem = settingsItem,
-                                    onSettingsItemUpdate = onSettingsItemUpdate
-                                )
-                            } else {
-                                BaseToggle(
-                                    firstLineRes = settingsItem.firstLineRes,
-                                    enabled = settingsItem.enabled,
-                                    onToggle = { enabled ->
-                                        onSettingsItemUpdate(settingsItem.copy(enabled = enabled))
-                                    }
-                                )
-                            }
+                LazyColumn(
+                    modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(),
+                    verticalArrangement = Arrangement.spacedBy(DefaultSpacings.itemPadding),
+                    contentPadding = PaddingValues(DefaultSpacings.itemPadding)
+                ) {
+                    items(state.settings) { settingsItem ->
+                        if (settingsItem.firstLineKey == StringProvider.LANGUAGE) {
+                            LanguageSelector(
+                                state = state,
+                                settingsItem = settingsItem,
+                                onSettingsItemUpdate = onSettingsItemUpdate
+                            )
+                        } else {
+                            BaseToggle(
+                                firstLineRes = settingsItem.firstLineRes,
+                                enabled = settingsItem.enabled,
+                                onToggle = { enabled ->
+                                    onSettingsItemUpdate(settingsItem.copy(enabled = enabled))
+                                }
+                            )
                         }
                     }
                 }

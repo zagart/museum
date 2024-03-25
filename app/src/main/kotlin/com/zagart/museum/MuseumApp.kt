@@ -7,6 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.zagart.museum.core.ui.components.BottomBar
+import com.zagart.museum.core.ui.components.TopBar
 import com.zagart.museum.core.ui.icons.IconsProvider
 import com.zagart.museum.core.ui.models.IconModel
 import com.zagart.museum.core.ui.theme.MuseumTheme
@@ -39,6 +41,7 @@ fun MuseumApp(
     val homeListState = rememberLazyListState()
     var forceDarkTheme by rememberSaveable { mutableStateOf(false) }
     val settingsScreenState by settingsViewModel.state.collectAsStateWithLifecycle()
+    var leftTopBarButton: IconModel? by remember { mutableStateOf(null) }
 
     forceDarkTheme = when (val currentState = settingsScreenState) {
         is SettingsScreenState.Success -> currentState.forceDarkTheme
@@ -47,6 +50,12 @@ fun MuseumApp(
 
     MuseumTheme(darkTheme = forceDarkTheme || isSystemInDarkTheme()) {
         Scaffold(
+            topBar = {
+                TopBar(
+                    title = stringResource(id = R.string.app_title),
+                    leftAction = leftTopBarButton
+                )
+            },
             bottomBar = {
                 BottomBar(
                     items = listOf(
@@ -63,6 +72,7 @@ fun MuseumApp(
                             activeIcon = IconsProvider.getSettingsIcon(true),
                             passiveIcon = IconsProvider.getSettingsIcon(false),
                             onItemPressed = {
+                                leftTopBarButton = null
                                 navController.navigate("settings")
                             }
                         )
@@ -83,6 +93,12 @@ fun MuseumApp(
                             onItemPressed = { objectNumber ->
                                 detailsViewModel.prepare(objectNumber)
                                 navController.navigate("details")
+                                leftTopBarButton = IconModel.BACK.copy(
+                                    onItemPressed = {
+                                        leftTopBarButton = null
+                                        navController.navigateUp()
+                                    }
+                                )
                             }
                         )
                     }

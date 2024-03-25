@@ -1,6 +1,8 @@
 package com.zagart.museum.core.ui.icons
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Home
@@ -27,6 +29,14 @@ object IconsProvider {
             Icons.Filled.ArrowDropUp
         } else {
             Icons.Outlined.ArrowDropUp
+        }
+    }
+
+    fun getBackIcon(enabled: Boolean = true): ImageVector {
+        return if (enabled) {
+            Icons.AutoMirrored.Filled.ArrowBack
+        } else {
+            Icons.AutoMirrored.Outlined.ArrowBack
         }
     }
 

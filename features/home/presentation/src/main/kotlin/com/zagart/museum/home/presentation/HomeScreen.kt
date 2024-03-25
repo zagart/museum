@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
@@ -35,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -48,13 +47,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.zagart.museum.core.ui.components.LoadingScreen
 import com.zagart.museum.core.ui.components.RemoteImage
+import com.zagart.museum.core.ui.configs.DefaultSpacings
 import com.zagart.museum.shared.strings.R
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
-    listState: LazyListState,
-    onItemPressed: (String) -> Unit
+    viewModel: HomeViewModel, listState: LazyListState, onItemPressed: (String) -> Unit
 ) {
     val context = LocalContext.current
     val pagingItems = viewModel.artObjectsPagingData.collectAsLazyPagingItems()
@@ -84,8 +82,7 @@ private fun HomeScreen(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(
-            count = pagingItems.itemCount,
+        items(count = pagingItems.itemCount,
             key = pagingItems.itemKey { it.id },
             itemContent = { index ->
                 val item = pagingItems[index]
@@ -101,8 +98,7 @@ private fun HomeScreen(
 
                     HomeScreenItem(item = item, onItemPressed = onItemPressed)
                 }
-            }
-        )
+            })
 
         processPagingState(pagingItems.loadState.mediator, pagingItems)
     }
@@ -143,44 +139,51 @@ private fun HomeScreenItem(
 ) {
     Surface(
         modifier = modifier.clip(MaterialTheme.shapes.small),
-        shadowElevation = 12.dp
+        shadowElevation = DefaultSpacings.itemPadding
     ) {
         Box(
             modifier = Modifier
                 .wrapContentHeight()
-                .clickable { onItemPressed(item.objectNumber) }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    item.image?.let { image ->
-                        //TODO: Reduce cache image quality
-                        val imageHeight = 100.dp
+                .clickable { onItemPressed(item.objectNumber) }) {
+            item.image?.let { image ->
+                //TODO: Reduce cache image quality
+                val imageHeightDp = 100.dp
+                val imageWidthDp = imageWidthInDp(imageHeightDp, image.height, image.width)
 
-                        RemoteImage(
-                            modifier = Modifier
-                                .height(imageHeight)
-                                .width(imageWidthInDp(imageHeight, image.height, image.width))
-                                .clip(MaterialTheme.shapes.small)
-                                .border(
-                                    4.dp,
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.shapes.small
-                                )
-                                .wrapContentWidth(),
-                            imageUrl = image.url,
-                            contentDescription = item.title
+                RemoteImage(
+                    modifier = Modifier
+                        .height(imageHeightDp)
+                        .width(imageWidthDp)
+                        .clip(MaterialTheme.shapes.small)
+                        .border(
+                            4.dp,
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.shapes.small
                         )
-                    }
+                        .shadow(12.dp)
+                        .wrapContentWidth(),
+                    imageUrl = image.url,
+                    contentDescription = item.title
+                )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                val innerPadding = 8.dp
+
+                Column(
+                    modifier = Modifier
+                        .height(imageHeightDp - innerPadding.times(2))
+                        .fillMaxWidth()
+                        .padding(start = imageWidthDp, end = innerPadding)
+                        .align(Alignment.Center)
+                        .clip(
+                            MaterialTheme.shapes.small.copy(
+                                topStart = CornerSize(0.dp),
+                                bottomStart = CornerSize(0.dp)
+                            )
+                        )
+                        .background(MaterialTheme.colorScheme.secondary),
+                ) {
                     Text(
-                        modifier = Modifier.padding(top = 12.dp, end = 12.dp),
+                        modifier = Modifier.padding(DefaultSpacings.itemPadding),
                         text = item.title,
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 3,
@@ -189,6 +192,7 @@ private fun HomeScreenItem(
                     )
                 }
             }
+
         }
     }
 }
@@ -227,15 +231,12 @@ private fun ErrorState(
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium
         )
-        Button(
-            colors = ButtonDefaults.buttonColors().copy(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.error
-            ),
-            onClick = { pagingItems.refresh() },
-            content = {
-                Text(text = stringResource(id = R.string.button_name_refresh))
-            })
+        Button(colors = ButtonDefaults.buttonColors().copy(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.error
+        ), onClick = { pagingItems.refresh() }, content = {
+            Text(text = stringResource(id = R.string.button_name_refresh))
+        })
     }
 }
 
