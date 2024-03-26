@@ -1,12 +1,10 @@
 package com.zagart.museum.core.data.sources
 
-import android.content.Context
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -14,15 +12,10 @@ import kotlinx.coroutines.flow.map
 import kotlin.reflect.KClass
 
 open class DataStoreLocalSource(
-    context: Context,
     protected val ioDispatcher: CoroutineDispatcher,
-    fileName: String,
+    protected val dataStore: DataStore<Preferences>,
     protected val keys: List<Key>
 ) {
-
-    protected val dataStore = PreferenceDataStoreFactory.create(produceFile = {
-        context.preferencesDataStoreFile(fileName)
-    })
 
     protected val dataStoreItems = dataStore.data.map {
         val preferences = it.toMutablePreferences()

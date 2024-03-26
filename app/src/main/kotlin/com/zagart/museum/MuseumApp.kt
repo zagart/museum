@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,9 +34,9 @@ import com.zagart.museum.shared.strings.R
 
 @Composable
 fun MuseumApp(
-    homeViewModel: HomeViewModel,
-    detailsViewModel: DetailsViewModel,
-    settingsViewModel: SettingsViewModel,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    detailsViewModel: DetailsViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
     val homeListState = rememberLazyListState()
@@ -80,6 +81,7 @@ fun MuseumApp(
                 )
             }
         ) { scaffoldPadding ->
+            //TODO: Create SOT for navigation routes
             NavHost(
                 modifier = Modifier.padding(scaffoldPadding),
                 navController = navController,
@@ -109,6 +111,7 @@ fun MuseumApp(
                         DetailsScreen(
                             viewModel = detailsViewModel,
                             onBackPressed = {
+                                leftTopBarButton = null
                                 navController.navigateUp()
                             }
                         )

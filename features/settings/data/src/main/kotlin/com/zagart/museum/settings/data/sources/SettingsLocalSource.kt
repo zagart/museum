@@ -1,31 +1,30 @@
 package com.zagart.museum.settings.data.sources
 
-import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import com.zagart.museum.core.data.di.DataStoreSettings
 import com.zagart.museum.core.data.sources.DataStoreLocalSource
 import com.zagart.museum.core.di.IoDispatcher
 import com.zagart.museum.settings.data.extensions.asKeys
 import com.zagart.museum.settings.data.models.SettingsItemEntity
 import com.zagart.museum.shared.strings.StringKey
 import com.zagart.museum.shared.strings.di.SettingsKeys
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class SettingsLocalSource @Inject constructor(
-    @ApplicationContext context: Context,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    @DataStoreSettings dataStore: DataStore<Preferences>,
     @SettingsKeys settingsKeys: List<StringKey>
 ) : DataStoreLocalSource(
-    context = context,
     ioDispatcher = ioDispatcher,
-    fileName = "settings",
+    dataStore = dataStore,
     keys = settingsKeys.asKeys()
 ) {
+
     fun getItems(): Flow<Result<List<SettingsItemEntity>>> {
         return dataStoreItems.map { dataStoreItems ->
             val settingsItems = mutableListOf<SettingsItemEntity>()

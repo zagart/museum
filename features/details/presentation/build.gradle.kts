@@ -14,4 +14,5 @@ dependencies {
     implementation(project(":features:home:domain"))
     implementation(project(":features:home:presentation"))
     implementation(project(":features:details:domain"))
+    implementation(project(":shared:strings"))
 }

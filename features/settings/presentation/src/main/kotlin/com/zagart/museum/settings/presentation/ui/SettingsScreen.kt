@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zagart.museum.core.ui.components.BaseTextField
 import com.zagart.museum.core.ui.components.BaseTextFieldAction
@@ -35,7 +36,7 @@ import com.zagart.museum.shared.strings.StringProvider
 
 @Composable
 fun SettingsScreen(
-    modifier: Modifier = Modifier, viewModel: SettingsViewModel
+    modifier: Modifier = Modifier, viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val settingsScreenState by viewModel.state.collectAsStateWithLifecycle()
@@ -58,7 +59,7 @@ fun SettingsScreen(
 private fun SettingsScreen(
     modifier: Modifier,
     state: SettingsScreenState,
-    onSettingsItemUpdate: (SettingsUiModel) -> Unit
+    onSettingsItemUpdate: (SettingsUiModel) -> Unit = {}
 ) {
     when (state) {
         is SettingsScreenState.Failure -> FailureScreen()

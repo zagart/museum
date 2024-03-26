@@ -14,17 +14,20 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.lang.ref.WeakReference
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object CoreDataModule {
+object TestCoreDataModule {
+
+    private var dataStoreReference: WeakReference<DataStore<Preferences>> = WeakReference(null)
 
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "museum-db").build()
+        return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
     }
 
     @Provides
@@ -41,9 +44,18 @@ object CoreDataModule {
     @Singleton
     @DataStoreSettings
     fun providesDataStoreSettings(@ApplicationContext context: Context): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create(produceFile = {
-            context.preferencesDataStoreFile("settings")
-        })
+        val currentDataStore = dataStoreReference.get()
+
+        return if (currentDataStore == null) {
+            val newDataStore = PreferenceDataStoreFactory.create(produceFile = {
+                context.preferencesDataStoreFile("settings")
+            })
+            dataStoreReference = WeakReference(newDataStore)
+
+            newDataStore
+        } else {
+            currentDataStore
+        }
     }
 }
 

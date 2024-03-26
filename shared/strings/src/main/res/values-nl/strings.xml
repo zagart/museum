@@ -11,4 +11,5 @@
     <string name="language_en">Engels</string>
     <string name="language_nl">Nederlands</string>
     <string name="app_title">Rijksmuseum</string>
+    <string name="details_authors_label">Auteurs</string>
 </resources>

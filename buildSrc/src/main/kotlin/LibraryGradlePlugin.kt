@@ -21,7 +21,7 @@ open class LibraryGradlePlugin : Plugin<Project> {
                     versionCode = ProjectConfig.versionCode
                     versionName = ProjectConfig.versionName
 
-                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                    testInstrumentationRunner = "com.zagart.museum.HiltTestRunner"
                     vectorDrawables {
                         useSupportLibrary = true
                     }

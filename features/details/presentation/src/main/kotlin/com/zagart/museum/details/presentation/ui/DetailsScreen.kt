@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +36,7 @@ import com.zagart.museum.details.presentation.models.DetailsUiModel
 import com.zagart.museum.details.presentation.viewmodels.DetailsScreenState
 import com.zagart.museum.details.presentation.viewmodels.DetailsViewModel
 import com.zagart.museum.home.presentation.ui.MetadataText
+import com.zagart.museum.shared.strings.R
 
 @Composable
 fun DetailsScreen(viewModel: DetailsViewModel, onBackPressed: () -> Unit) {
@@ -68,7 +70,7 @@ fun DetailsScreenPreview() {
 }
 
 @Composable
-private fun DetailsScreen(state: DetailsScreenState) {
+fun DetailsScreen(state: DetailsScreenState) {
     when (state) {
         is DetailsScreenState.Failure -> {
             FailureScreen()
@@ -167,7 +169,7 @@ private fun DetailsScreen(state: DetailsScreenState) {
                                 modifier = Modifier.padding(
                                     horizontal = DefaultSpacings.itemPadding.div(2)
                                 ),
-                                text = "Authors",
+                                text = stringResource(R.string.details_authors_label),
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Spacer(modifier = Modifier.height(DefaultSpacings.itemPadding))

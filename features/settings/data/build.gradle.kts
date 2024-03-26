@@ -13,4 +13,6 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":shared:strings"))
     implementation(project(":features:settings:domain"))
+
+    implementation(libs.datastore.preferences)
 }

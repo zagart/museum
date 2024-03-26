@@ -1,2 +1,1 @@
-class DomainModuleGradlePlugin : LibraryGradlePlugin() {
-}
+class DomainModuleGradlePlugin : LibraryGradlePlugin()

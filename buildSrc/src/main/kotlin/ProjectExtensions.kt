@@ -58,6 +58,16 @@ fun Project.setupCompose() {
     }
 }
 
+fun Project.setupTests() {
+    setupRoom()
+    dependencies {
+        implementation(library("compose-ui-test-junit4"))
+        implementation(library("compose-ui-test-manifest"))
+        implementation(library("test-runner"))
+        androidTestImplementation(library("hilt-android-testing"))
+    }
+}
+
 fun Project.addHomeFeature() {
     dependencies {
         implementation(project(":api"))
@@ -83,5 +93,7 @@ fun Project.addSettingsFeature() {
         implementation(project(":features:settings:data"))
         implementation(project(":features:settings:domain"))
         implementation(project(":features:settings:presentation"))
+
+        implementation(library("datastore-preferences"))
     }
 }

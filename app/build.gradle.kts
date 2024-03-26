@@ -17,7 +17,7 @@ android {
         versionCode = ProjectConfig.versionCode
         versionName = ProjectConfig.versionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.zagart.museum.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -60,5 +60,7 @@ android {
         implementation(project(":core:ui"))
         implementation(project(":shared:strings"))
         implementation(libs.appcompat)
+
+        setupTests()
     }
 }
