@@ -52,6 +52,7 @@ class DetailsViewModel @Inject constructor(
 sealed interface DetailsScreenState {
 
     data object Loading : DetailsScreenState
+
     data object Failure : DetailsScreenState
 
     data class Success(

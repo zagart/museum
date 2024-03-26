@@ -17,7 +17,7 @@ object Converters {
 
     @TypeConverter
     fun List<ArtObjectDetailsPrincipalMakerEntity>.fromEntityList(): String {
-        return map { entity ->
+        return joinToString("@entities") { entity ->
             listOf(
                 entity.name,
                 entity.unFixedName,
@@ -35,7 +35,7 @@ object Converters {
                 entity.qualification,
                 entity.labelDesc
             ).joinToString("@fields")
-        }.joinToString("@entities")
+        }
     }
 
     @TypeConverter

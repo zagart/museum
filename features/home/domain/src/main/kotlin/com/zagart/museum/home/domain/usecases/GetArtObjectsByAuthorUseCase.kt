@@ -1,7 +1,5 @@
 package com.zagart.museum.home.domain.usecases
 
-import androidx.paging.PagingData
-import androidx.paging.map
 import com.zagart.museum.home.domain.models.ArtObject
 import com.zagart.museum.home.domain.repositories.ArtObjectRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +10,18 @@ class GetArtObjectsByAuthorUseCase @Inject constructor(
     private val repository: ArtObjectRepository
 ) {
 
-    operator fun invoke(): Flow<PagingData<ArtObject>> {
-        return repository.getArtObjectsPagingData().map { pagingData ->
+    suspend operator fun invoke(): Flow<Result<List<ArtObject>>> {
+        return repository.getAllArtObjects().map { result ->
             var currentAuthor = ""
 
-            pagingData.map { artObject ->
-                if (artObject.principalOrFirstMaker != currentAuthor) {
-                    currentAuthor = artObject.principalOrFirstMaker
-                    artObject.copy(withAuthorHeader = true)
-                } else {
-                    artObject
+            result.map { domainModels ->
+                domainModels.map { artObject ->
+                    if (artObject.principalOrFirstMaker != currentAuthor) {
+                        currentAuthor = artObject.principalOrFirstMaker
+                        artObject.copy(withAuthorHeader = true)
+                    } else {
+                        artObject
+                    }
                 }
             }
         }

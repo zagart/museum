@@ -9,45 +9,44 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.paging.LoadState
-import androidx.paging.LoadStates
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zagart.museum.core.ui.components.FailureScreen
 import com.zagart.museum.core.ui.components.LoadingScreen
 import com.zagart.museum.core.ui.components.RemoteImage
 import com.zagart.museum.core.ui.configs.DefaultSpacings
+import com.zagart.museum.home.presentation.models.HomeScreenImageUi
 import com.zagart.museum.home.presentation.models.HomeScreenModelUi
+import com.zagart.museum.home.presentation.viewmodels.HomeScreenState
 import com.zagart.museum.home.presentation.viewmodels.HomeViewModel
 import com.zagart.museum.shared.strings.R
 
@@ -59,7 +58,7 @@ fun HomeScreen(
     onBackPressed: () -> Unit
 ) {
     val context = LocalContext.current
-    val pagingItems = viewModel.artObjectsPagingData.collectAsLazyPagingItems()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     BackHandler {
         if (context is Activity) {
@@ -68,32 +67,49 @@ fun HomeScreen(
         onBackPressed()
     }
 
-    HomeScreen(pagingItems = pagingItems, onItemPressed = onItemPressed, listState = listState)
+    HomeScreen(
+        state = state,
+        listState = listState,
+        onItemPressed = onItemPressed,
+        onScrollOverflow = { size ->
+            viewModel.loadMore(size)
+        }
+    )
 }
 
+//TODO: Provide interface for manual data refresh
 @Composable
 private fun HomeScreen(
+    state: HomeScreenState,
     listState: LazyListState,
-    pagingItems: LazyPagingItems<HomeScreenModelUi>,
-    onItemPressed: (String) -> Unit
+    onItemPressed: (String) -> Unit,
+    onScrollOverflow: (Int) -> Unit
 ) {
-    if (pagingItems.loadState.refresh == LoadState.Loading) {
-        LoadingScreen()
-        return
-    }
+    when (state) {
+        is HomeScreenState.Failure -> FailureScreen()
+        is HomeScreenState.Loading -> LoadingScreen()
+        is HomeScreenState.Success -> {
+            //default value of canScrollForward is false and it's not actual overflow
+            var skipFirstOverflow by remember { mutableStateOf(true) }
+            val canScrollForward by remember { derivedStateOf { listState.canScrollForward } }
 
-    LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(
-            count = pagingItems.itemCount,
-            key = pagingItems.itemKey { item -> item.id },
-            itemContent = { index ->
-                val item = pagingItems[index]
+            if (!canScrollForward) {
+                if (skipFirstOverflow) {
+                    skipFirstOverflow = false
+                } else {
+                    AppendLoadingState(state.items.isEmpty())
+                    LaunchedEffect(true) {
+                        onScrollOverflow(state.items.size)
+                    }
+                }
+            }
 
-                if (item != null) {
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(items = state.items, key = { it.id }) { item ->
                     if (item.withAuthorHeader) {
                         Text(
                             modifier = Modifier.padding(DefaultSpacings.itemPadding),
@@ -103,46 +119,21 @@ private fun HomeScreen(
                         )
                     }
 
-                    HomeScreenItem(item = item, onItemPressed = onItemPressed)
+                    HomeScreenItem(
+                        item = item.copy(title = "${state.items.indexOf(item) + 1}# | ${item.title}"),
+                        onItemPressed = onItemPressed
+                    )
                 }
-            })
-
-        processPagingState(pagingItems.loadState.mediator, pagingItems)
-    }
-}
-
-private fun LazyListScope.processPagingState(
-    loadState: LoadStates?, pagingItems: LazyPagingItems<HomeScreenModelUi>
-) {
-    item {
-        if (loadState?.append == LoadState.Loading) {
-            AppendLoadingState()
-        }
-
-        if (loadState?.refresh is LoadState.Error || loadState?.append is LoadState.Error) {
-            val error = if (loadState.append is LoadState.Error) {
-                (loadState.append as LoadState.Error).error
-            } else {
-                (loadState.refresh as LoadState.Error).error
             }
-
-
-            val isPagingError = (loadState.append is LoadState.Error) || pagingItems.itemCount > 1
-
-            val modifier = if (isPagingError) {
-                Modifier.padding(8.dp)
-            } else {
-                Modifier.fillParentMaxSize()
-            }
-
-            ErrorState(modifier, isPagingError, error, pagingItems)
         }
     }
 }
 
 @Composable
 private fun HomeScreenItem(
-    modifier: Modifier = Modifier, item: HomeScreenModelUi, onItemPressed: (String) -> Unit
+    modifier: Modifier = Modifier,
+    item: HomeScreenModelUi = HomeScreenModelUi(),
+    onItemPressed: (String) -> Unit = {}
 ) {
     Surface(
         modifier = modifier.clip(MaterialTheme.shapes.small)
@@ -217,51 +208,42 @@ private fun HomeScreenItem(
 }
 
 @Composable
-private fun AppendLoadingState() {
-    LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary
-    )
-}
-
-@Composable
-private fun ErrorState(
-    modifier: Modifier,
-    isPaginatingError: Boolean,
-    error: Throwable,
-    pagingItems: LazyPagingItems<HomeScreenModelUi>
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        if (!isPaginatingError) {
-            Icon(
-                modifier = Modifier.size(64.dp),
-                imageVector = Icons.Rounded.Warning,
-                contentDescription = "Error icon",
-                tint = MaterialTheme.colorScheme.error
-            )
+private fun AppendLoadingState(showPlaceholder: Boolean = false) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (showPlaceholder) {
+            SkeletonLoading()
         }
 
-        Text(
-            modifier = Modifier.padding(8.dp),
-            text = getErrorMessage(error),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter),
+            color = MaterialTheme.colorScheme.primary
         )
-        Button(colors = ButtonDefaults.buttonColors().copy(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.error
-        ), onClick = { pagingItems.refresh() }, content = {
-            Text(text = stringResource(id = R.string.button_name_refresh))
-        })
     }
 }
 
 @Composable
-private fun getErrorMessage(error: Throwable): String {
-    return error.message ?: stringResource(id = R.string.text_failure)
+private fun SkeletonLoading() {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(10) { index ->
+            HomeScreenItem(
+                item = HomeScreenModelUi(
+                    withAuthorHeader = index == 0,
+                    author = stringResource(id = R.string.text_loading),
+                    image = HomeScreenImageUi(
+                        url = "",
+                        height = 900,
+                        width = 1600
+                    )
+                )
+            )
+        }
+    }
 }
 
 fun imageWidthInDp(height: Dp, imageHeight: Int, imageWidth: Int): Dp {

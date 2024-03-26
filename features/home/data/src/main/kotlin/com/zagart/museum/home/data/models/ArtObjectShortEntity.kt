@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class ArtObjectShortEntity(
-    @PrimaryKey(autoGenerate = true) val index: Int = 0,
+    @PrimaryKey
     val id: String,
     val title: String,
     val objectNumber: String,

@@ -1,6 +1,5 @@
 package com.zagart.museum.home.data.sources
 
-import androidx.paging.PagingSource
 import com.zagart.museum.api.model.ArtObjectDto
 import com.zagart.museum.core.di.IoDispatcher
 import com.zagart.museum.home.data.daos.ArtObjectShortDao
@@ -10,16 +9,18 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ArtObjectLocalSource @Inject constructor(
-    @IoDispatcher
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val artObjectDao: ArtObjectShortDao
 ) {
 
-    internal fun getAll(): PagingSource<Int, ArtObjectShortEntity> {
-        return artObjectDao.getAll()
+    internal fun getAll(): Flow<Result<List<ArtObjectShortEntity>>> {
+        return artObjectDao.getAll().map { entities ->
+            runCatching { entities }
+        }.flowOn(ioDispatcher)
     }
 
     internal fun insertAll(
@@ -45,6 +46,12 @@ class ArtObjectLocalSource @Inject constructor(
             emit(runCatching {
                 artObjectDao.getCacheCreationDate()
             })
+        }.flowOn(ioDispatcher)
+    }
+
+    fun getCount(): Flow<Result<Int>> {
+        return flow {
+            emit(runCatching { artObjectDao.getCount() })
         }.flowOn(ioDispatcher)
     }
 }

@@ -11,7 +11,4 @@ android {
 
 dependencies {
     implementation(project(":features:home:domain"))
-
-    implementation(libs.paging.compose)
-    implementation(libs.paging.runtime)
 }

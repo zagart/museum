@@ -40,7 +40,6 @@ fun Project.setupRoom() {
         ksp(library("room-compiler"))
         implementation(library("room"))
         implementation(library("room-ktx"))
-        implementation(library("room-paging"))
     }
 }
 
@@ -74,8 +73,6 @@ fun Project.addHomeFeature() {
         implementation(project(":features:home:data"))
         implementation(project(":features:home:domain"))
         implementation(project(":features:home:presentation"))
-
-        implementation(library("paging-compose"))
     }
 }
 
