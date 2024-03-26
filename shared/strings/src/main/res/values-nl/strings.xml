@@ -12,4 +12,5 @@
     <string name="language_nl">Nederlands</string>
     <string name="app_title">Rijksmuseum</string>
     <string name="details_authors_label">Auteurs</string>
+    <string name="text_loading_items_failure">Fout tijdens het laden van gegevens. Controleer uw internetverbinding.</string>
 </resources>

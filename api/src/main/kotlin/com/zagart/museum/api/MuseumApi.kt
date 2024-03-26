@@ -22,7 +22,7 @@ interface MuseumApi {
         @Query("key") apiKey: String = API_KEY,
         @Query("ps") pageSize: Int = PAGE_SIZE,
         @Query("p") page: Int,
-        @Query("s") sorting: String = "artist",
+        @Query("s") sorting: String = "artistdesc",
     ): ArtObjectsResponse
 
     @GET("api/en/collection/{objectNumber}")

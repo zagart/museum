@@ -1,6 +1,7 @@
 package com.zagart.museum.home.presentation.ui
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -91,16 +93,32 @@ private fun HomeScreen(
         is HomeScreenState.Success -> {
             //default value of canScrollForward is false and it's not actual overflow
             var skipFirstOverflow by remember { mutableStateOf(true) }
-            val canScrollForward by remember { derivedStateOf { listState.canScrollForward } }
+            val canScrollForward by remember { derivedStateOf { !state.isAppendingFailed && listState.canScrollForward } }
 
             if (!canScrollForward) {
                 if (skipFirstOverflow) {
                     skipFirstOverflow = false
                 } else {
-                    AppendLoadingState(state.items.isEmpty())
+                    if (!state.isAppendingFailed) {
+                        AppendLoadingState(state.items.isEmpty())
+                    }
+                    
                     LaunchedEffect(true) {
                         onScrollOverflow(state.items.size)
                     }
+                }
+            }
+
+            if (state.isAppendingFailed) {
+                val context = LocalContext.current
+                val failureText = stringResource(id = R.string.text_loading_items_failure)
+
+                LaunchedEffect(true) {
+                    Toast.makeText(
+                        context,
+                        failureText,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -120,9 +138,13 @@ private fun HomeScreen(
                     }
 
                     HomeScreenItem(
-                        item = item.copy(title = "${state.items.indexOf(item) + 1}# | ${item.title}"),
+                        item = item.copy(title = item.title),
                         onItemPressed = onItemPressed
                     )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }

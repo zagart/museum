@@ -1,6 +1,5 @@
 package com.zagart.museum.home.data.repositories
 
-import android.util.Log
 import com.zagart.museum.api.PAGE_SIZE
 import com.zagart.museum.core.di.IoDispatcher
 import com.zagart.museum.home.data.extensions.toDomainModel
@@ -41,22 +40,15 @@ class ArtObjectRepositoryImpl @Inject constructor(
 
             localSource.insertAll(dtos).single().let { insertionResult ->
                 if (insertionResult.isFailure) {
-                    insertionResult.handleFailure()
                     return flow { emit(insertionResult) }
                 }
             }
-        } else {
-            networkResult.handleFailure()
         }
 
-        return flow { emit(Result.failure(Throwable("ArtObjectRepositoryImpl#loadMore() failure"))) }
+        return flow { emit(networkResult.map { }) }
     }
 
     private fun calculatePage(size: Int): Int {
         return if (size < PAGE_SIZE) 1 else (size / PAGE_SIZE) + 1
-    }
-
-    private fun Result<Any>.handleFailure() {
-        Log.e("ArtObjectRepositoryImpl", exceptionOrNull()?.message ?: "")
     }
 }
