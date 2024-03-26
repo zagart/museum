@@ -81,11 +81,6 @@ fun DetailsScreen(state: DetailsScreenState) {
         }
 
         is DetailsScreenState.Success -> {
-            val itemModifier = Modifier.padding(
-                start = DefaultSpacings.itemPadding,
-                end = DefaultSpacings.itemPadding
-            )
-
             Box {
                 Column(
                     modifier = Modifier
@@ -97,7 +92,9 @@ fun DetailsScreen(state: DetailsScreenState) {
                     Spacer(modifier = Modifier.height(DefaultSpacings.itemPadding))
 
                     Text(
-                        modifier = itemModifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(horizontal = DefaultSpacings.itemPadding)
+                            .fillMaxWidth(),
                         text = state.details.title,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
@@ -112,9 +109,10 @@ fun DetailsScreen(state: DetailsScreenState) {
                             imageWidth.times(image.height.toFloat() / image.width.toFloat())
 
                         RemoteImage(
-                            modifier = itemModifier
+                            modifier = Modifier
                                 .width(imageWidth)
                                 .height(imageHeight)
+                                .align(Alignment.CenterHorizontally)
                                 .clip(MaterialTheme.shapes.small),
                             imageUrl = image.url,
                             contentDescription = state.details.title,
@@ -148,7 +146,7 @@ fun DetailsScreen(state: DetailsScreenState) {
 
                     state.details.description.takeIf { it.isNotBlank() }?.let { description ->
                         Text(
-                            modifier = itemModifier,
+                            modifier = Modifier.padding(horizontal = DefaultSpacings.itemPadding),
                             text = description,
                             style = MaterialTheme.typography.bodyMedium
                         )
