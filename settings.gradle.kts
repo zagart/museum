@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Museum"
+rootProject.name = "museum-app"
 
 include(":api")
 include(":app")
