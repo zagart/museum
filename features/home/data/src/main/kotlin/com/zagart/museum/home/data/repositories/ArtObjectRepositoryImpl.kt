@@ -21,7 +21,7 @@ class ArtObjectRepositoryImpl @Inject constructor(
     private val remoteSource: ArtObjectRemoteSource
 ) : ArtObjectRepository {
 
-    override suspend fun getAllArtObjects(): Flow<Result<List<ArtObject>>> {
+    override suspend fun getAll(): Flow<Result<List<ArtObject>>> {
         return localSource.getAll().map { result ->
             result.map { entities ->
                 entities.map { entity ->
@@ -46,6 +46,10 @@ class ArtObjectRepositoryImpl @Inject constructor(
         }
 
         return flow { emit(networkResult.map { }) }
+    }
+
+    override suspend fun removeAll(): Flow<Result<Unit>> {
+        return localSource.removeAll()
     }
 
     private fun calculatePage(size: Int): Int {

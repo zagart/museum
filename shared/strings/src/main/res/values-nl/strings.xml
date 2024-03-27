@@ -4,7 +4,7 @@
     <string name="nav_text_home">Thuis</string>
     <string name="nav_text_settings">Instellingen</string>
     <string name="text_loading">Bezig met laden…</string>
-    <string name="text_failure">Au, er is iets misgegaan…</string>
+    <string name="text_failure">Au, er is iets misgegaan… Controleer uw internetverbinding.</string>
     <string name="button_name_refresh">Vernieuwen</string>
     <string name="settings_item_dark_theme">Donker thema</string>
     <string name="settings_item_language">Taal</string>
@@ -13,4 +13,7 @@
     <string name="app_title">Rijksmuseum</string>
     <string name="details_authors_label">Auteurs</string>
     <string name="text_loading_items_failure">Fout tijdens het laden van gegevens. Controleer uw internetverbinding.</string>
+    <string name="text_updating">Updaten…</string>
+    <string name="text_update_failure">Mislukt tijdens de updatepoging. Controleer uw internetverbinding.</string>
+    <string name="button_name_failure">Opnieuw proberen</string>
 </resources>

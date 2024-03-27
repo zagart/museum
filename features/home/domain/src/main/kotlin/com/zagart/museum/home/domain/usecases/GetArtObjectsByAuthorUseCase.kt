@@ -11,7 +11,7 @@ class GetArtObjectsByAuthorUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(): Flow<Result<List<ArtObject>>> {
-        return repository.getAllArtObjects().map { result ->
+        return repository.getAll().map { result ->
             var currentAuthor = ""
 
             result.map { domainModels ->

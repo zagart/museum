@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -22,7 +25,11 @@ fun MessageText(
             .padding(8.dp)
             .wrapContentSize(),
         text = stringResource(id = textRes),
+        textAlign = TextAlign.Center,
         color = textColor,
-        style = MaterialTheme.typography.headlineSmall
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+        maxLines = 5,
+        overflow = TextOverflow.Ellipsis
     )
 }

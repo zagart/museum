@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.zagart.museum.home.domain.models.ArtObject
 import com.zagart.museum.home.domain.usecases.GetArtObjectsByAuthorUseCase
 import com.zagart.museum.home.domain.usecases.LoadMoreArtObjectsUseCase
+import com.zagart.museum.home.domain.usecases.RefreshArtObjectsUseCase
 import com.zagart.museum.home.presentation.extensions.toUiModel
 import com.zagart.museum.home.presentation.models.HomeScreenModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     artObjectsUseCase: GetArtObjectsByAuthorUseCase,
-    private val loadMoreUseCase: LoadMoreArtObjectsUseCase
+    private val loadMoreUseCase: LoadMoreArtObjectsUseCase,
+    private val refreshUseCase: RefreshArtObjectsUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
@@ -31,39 +33,68 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000)
     )
 
-    private var loadingJob: Job? = null
+    private var loadMoreJob: Job? = null
+    private var refreshJob: Job? = null
 
     init {
         viewModelScope.launch {
             artObjectsUseCase().collectLatest { artObjectsResult ->
                 handleResult(artObjectsResult)
 
-                if (artObjectsResult.isSuccess && artObjectsResult.getOrThrow().isEmpty()) {
-                    loadMore()
+                if (artObjectsResult.isSuccess && artObjectsResult.getOrThrow()
+                        .isEmpty() && refreshJob == null
+                ) {
+                    refresh()
                 }
             }
         }
     }
 
     fun loadMore(size: Int = 0) {
-        loadingJob?.cancel()
-        loadingJob = Job().also { job ->
+        if (refreshJob != null) {
+            return
+        }
+
+        loadMoreJob?.cancel()
+        loadMoreJob = Job().also { job ->
             CoroutineScope(job).launch {
-                toggleAppendingState()
+                updateAppendState()
 
                 loadMoreUseCase(size).collectLatest { loadingResult ->
-                    toggleAppendingState(loadingResult.isFailure)
-                    loadingJob?.cancel()
+                    updateAppendState(loadingResult.isFailure)
+                    loadMoreJob?.cancel()
+                    loadMoreJob = null
                 }
             }
         }
     }
 
+    fun refresh() {
+        loadMoreJob?.cancel()
+        refreshJob?.cancel()
+
+        refreshJob = Job().also { job ->
+            CoroutineScope(job).launch {
+                refreshUseCase.invoke().collectLatest { refreshResult ->
+                    if (refreshResult.isFailure) {
+                        _state.value = HomeScreenState.Failure
+                    }
+
+                    refreshJob?.cancel()
+                    refreshJob = null
+                }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        loadMoreJob?.cancel()
+        refreshJob?.cancel()
+    }
+
     private fun handleResult(artObjectsResult: Result<List<ArtObject>>) {
         if (artObjectsResult.isSuccess) {
             _state.value = HomeScreenState.Success(
-                isAppending = false,
-                isAppendingFailed = false,
                 items = artObjectsResult.getOrThrow().map { domainModel ->
                     domainModel.toUiModel()
                 }
@@ -73,7 +104,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun toggleAppendingState(isAppendingFailed: Boolean = false) {
+    private fun updateAppendState(isAppendingFailed: Boolean = false) {
         val currentState = _state.value
 
         if (currentState is HomeScreenState.Success) {
@@ -94,8 +125,8 @@ sealed interface HomeScreenState {
     data object Failure : HomeScreenState
 
     data class Success(
-        val isAppending: Boolean,
-        val isAppendingFailed: Boolean,
-        val items: List<HomeScreenModelUi>
+        val items: List<HomeScreenModelUi>,
+        val isAppending: Boolean = false,
+        val isAppendingFailed: Boolean = false
     ) : HomeScreenState
 }

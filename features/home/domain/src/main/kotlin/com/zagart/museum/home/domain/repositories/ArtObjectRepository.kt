@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface ArtObjectRepository {
 
-    suspend fun getAllArtObjects(): Flow<Result<List<ArtObject>>>
+    suspend fun getAll(): Flow<Result<List<ArtObject>>>
 
-    suspend fun loadMore(size : Int): Flow<Result<Unit>>
+    suspend fun loadMore(size: Int): Flow<Result<Unit>>
+
+    suspend fun removeAll(): Flow<Result<Unit>>
 }
