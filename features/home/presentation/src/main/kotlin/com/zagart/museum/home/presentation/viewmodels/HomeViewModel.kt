@@ -10,7 +10,10 @@ import com.zagart.museum.home.presentation.extensions.toUiModel
 import com.zagart.museum.home.presentation.models.HomeScreenModelUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -44,7 +47,7 @@ class HomeViewModel @Inject constructor(
                 if (artObjectsResult.isSuccess && artObjectsResult.getOrThrow()
                         .isEmpty() && refreshJob == null
                 ) {
-                    refresh()
+                    refresh(false, null)
                 }
             }
         }
@@ -69,13 +72,27 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun refresh() {
+    fun refresh(showLoading: Boolean, minResultTime: Long?) {
+        if (showLoading) {
+            _state.value = HomeScreenState.Loading
+        }
+
         loadMoreJob?.cancel()
         refreshJob?.cancel()
 
         refreshJob = Job().also { job ->
             CoroutineScope(job).launch {
+                val delayDef: Deferred<Unit>? =
+                    if (minResultTime == null || minResultTime <= 0L) null else async {
+                        delay(
+                            minResultTime
+                        )
+                    }
+
+                delayDef?.start()
                 refreshUseCase.invoke().collectLatest { refreshResult ->
+                    delayDef?.await()
+
                     if (refreshResult.isFailure) {
                         _state.value = HomeScreenState.Failure
                     }
@@ -94,11 +111,10 @@ class HomeViewModel @Inject constructor(
 
     private fun handleResult(artObjectsResult: Result<List<ArtObject>>) {
         if (artObjectsResult.isSuccess) {
-            _state.value = HomeScreenState.Success(
-                items = artObjectsResult.getOrThrow().map { domainModel ->
+            _state.value =
+                HomeScreenState.Success(items = artObjectsResult.getOrThrow().map { domainModel ->
                     domainModel.toUiModel()
-                }
-            )
+                })
         } else {
             _state.value = HomeScreenState.Failure
         }
@@ -110,8 +126,7 @@ class HomeViewModel @Inject constructor(
         if (currentState is HomeScreenState.Success) {
             _state.update {
                 currentState.copy(
-                    isAppending = !currentState.isAppending,
-                    isAppendingFailed = isAppendingFailed
+                    isAppending = !currentState.isAppending, isAppendingFailed = isAppendingFailed
                 )
             }
         }

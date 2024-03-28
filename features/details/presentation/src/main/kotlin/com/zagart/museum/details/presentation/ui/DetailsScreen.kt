@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zagart.museum.core.ui.animations.MIN_LOADING_ANIMATION_TIME
 import com.zagart.museum.core.ui.components.FailureScreen
 import com.zagart.museum.core.ui.components.LoadingScreen
 import com.zagart.museum.core.ui.components.RemoteImage
@@ -45,7 +46,12 @@ fun DetailsScreen(viewModel: DetailsViewModel, onBackPressed: () -> Unit) {
     BackHandler {
         onBackPressed()
     }
-    DetailsScreen(state = state)
+    DetailsScreen(
+        state = state,
+        onRetryPressed = {
+            viewModel.update(MIN_LOADING_ANIMATION_TIME)
+        }
+    )
 }
 
 @Preview
@@ -70,10 +76,15 @@ fun DetailsScreenPreview() {
 }
 
 @Composable
-fun DetailsScreen(state: DetailsScreenState) {
+fun DetailsScreen(
+    state: DetailsScreenState,
+    onRetryPressed: () -> Unit = {}
+) {
     when (state) {
         is DetailsScreenState.Failure -> {
-            FailureScreen()
+            FailureScreen(
+                onButtonPressed = onRetryPressed
+            )
         }
 
         is DetailsScreenState.Loading -> {

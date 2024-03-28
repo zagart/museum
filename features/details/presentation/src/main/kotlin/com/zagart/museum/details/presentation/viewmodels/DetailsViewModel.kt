@@ -1,12 +1,14 @@
 package com.zagart.museum.details.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zagart.museum.details.presentation.extensions.domainAsUiModel
 import com.zagart.museum.details.presentation.models.DetailsUiModel
 import com.zagart.museum.domain.usecases.GetArtObjectDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -26,22 +28,35 @@ class DetailsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000)
     )
 
+    private var objectNumber = ""
+
     fun prepare(objectNumber: String) {
+        this.objectNumber = objectNumber
+        update()
+    }
+
+    fun update(minResultTime: Long? = null) {
         if (_state.value !is DetailsScreenState.Loading) {
             _state.value = DetailsScreenState.Loading
         }
 
         viewModelScope.launch {
+            val delayDef: Deferred<Unit>? =
+                if (minResultTime == null || minResultTime <= 0L) null else async {
+                    delay(
+                        minResultTime
+                    )
+                }
+
+            delayDef?.start()
             detailsUseCase(objectNumber).collectLatest { detailsResult ->
+                delayDef?.await()
+
                 if (detailsResult.isSuccess) {
                     _state.value = DetailsScreenState.Success(
                         details = detailsResult.getOrThrow().domainAsUiModel()
                     )
                 } else {
-                    Log.e(
-                        "DetailsViewModel",
-                        detailsResult.exceptionOrNull()?.message ?: "Unknown failure"
-                    )
                     _state.value = DetailsScreenState.Failure
                 }
             }

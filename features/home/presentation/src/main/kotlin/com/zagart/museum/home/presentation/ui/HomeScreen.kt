@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zagart.museum.core.ui.animations.MIN_LOADING_ANIMATION_TIME
 import com.zagart.museum.core.ui.components.FailureScreen
 import com.zagart.museum.core.ui.components.LoadingScreen
 import com.zagart.museum.core.ui.configs.DefaultSpacings
@@ -65,8 +66,8 @@ fun HomeScreen(
         onScrollOverflow = { size ->
             viewModel.loadMore(size)
         },
-        onRefresh = {
-            viewModel.refresh()
+        onRefresh = { showLoading, minResultTime ->
+            viewModel.refresh(showLoading, minResultTime)
         }
     )
 }
@@ -78,13 +79,13 @@ private fun HomeScreen(
     listState: LazyListState,
     onItemPressed: (String) -> Unit,
     onScrollOverflow: (Int) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: (Boolean, Long) -> Unit
 ) {
     val refreshState = rememberPullToRefreshState()
 
     if (refreshState.isRefreshing) {
         LaunchedEffect(true) {
-            onRefresh()
+            onRefresh(false, 0)
         }
     }
 
@@ -94,7 +95,7 @@ private fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .scrollable(),
-                onButtonPressed = { onRefresh() }
+                onButtonPressed = { onRefresh(true, MIN_LOADING_ANIMATION_TIME) }
             )
         }
 
